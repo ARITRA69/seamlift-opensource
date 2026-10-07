@@ -44,14 +44,14 @@ export default function Home() {
       </header>
       <main>
         <section
-          className="grid items-center gap-10 py-16 lg:grid-cols-2 lg:gap-14 lg:py-24"
+          className="grid items-center gap-10 py-16 lg:grid-cols-3 lg:gap-10 lg:py-24"
           aria-labelledby="intro-title"
         >
           <div className="space-y-7">
             <Badge variant="secondary">Open source · React 18 &amp; 19</Badge>
             <h1
               id="intro-title"
-              className="text-5xl font-semibold leading-tight tracking-tighter md:text-6xl"
+              className="text-5xl font-semibold leading-tight tracking-tighter md:text-6xl lg:text-5xl"
             >
               Your video.
               <br />A better player.
@@ -77,10 +77,11 @@ export default function Home() {
               npm install seamplayer
             </code>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:col-span-2">
             <PlayerDemo />
             <p className="text-center text-sm text-muted-foreground">
-              Press play. Then try the timeline, settings, or K to pause.
+              Try 720p, 480p, or 360p, English captions, seven chapters, and a
+              link to any moment.
             </p>
           </div>
         </section>

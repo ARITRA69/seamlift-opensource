@@ -1,32 +1,36 @@
 "use client";
 
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { SeamPlayer } from "seamplayer";
+import { AccentSwitch } from "@/components/ui/accent-switch";
+import { demoProps, demoThemes } from "@/lib/player-demo";
 
 export function PlayerDemo() {
   return (
-    <SeamPlayer
-      src="/demo/film.mp4"
-      poster="/demo/poster.jpg"
-      title="Creators around the world"
-      duration={29}
-      thumbnails={{
-        url: "/demo/scrub.jpg",
-        width: 320,
-        height: 180,
-        columns: 10,
-        count: 29,
-        interval: 1,
-      }}
-      chapters={[
-        { start: 0, title: "Lisbon" },
-        { start: 4, title: "Western Norway" },
-        { start: 12, title: "On the road" },
-      ]}
-      download={{
-        url: "/demo/film.mp4",
-        filename: "seamplayer-demo.mp4",
-        label: "720p",
-      }}
-    />
+    <Suspense fallback={<PlayerDemoBody />}>
+      <LinkedPlayerDemo />
+    </Suspense>
+  );
+}
+
+function LinkedPlayerDemo() {
+  const params = useSearchParams();
+  const time = Number(params.get("t"));
+  const startTime = Number.isFinite(time) && time > 0 ? time : undefined;
+  return <PlayerDemoBody key={startTime ?? 0} startTime={startTime} />;
+}
+
+function PlayerDemoBody({ startTime }: { startTime?: number }) {
+  const [accent, setAccent] = useState<keyof typeof demoThemes>("pop");
+  return (
+    <div className="flex w-full flex-col items-center gap-4">
+      <AccentSwitch value={accent} onChange={setAccent} />
+      <SeamPlayer
+        {...demoProps}
+        startTime={startTime}
+        theme={demoThemes[accent]}
+      />
+    </div>
   );
 }

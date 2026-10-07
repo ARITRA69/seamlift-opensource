@@ -36,6 +36,8 @@ bun run --filter @seamplayer/site ui:add dialog
 
 `apps/site/components.json` configures component generation. `apps/site/src/app/globals.css` owns the site's semantic theme tokens. `apps/site/eslint.config.mjs` combines Next.js linting with all six `@shadcn/lint` rules as errors: component styling contracts, semantic colors, scale values, inline styles, known classes, and static classes. Edit component variants instead of restyling them at call sites.
 
+The live demo matches Seamlift’s brand-page player: three MP4 quality levels and downloads, seven chapters, English captions and caption sizes, filmstrip previews, Pop/Sun themes, saved playback position, 24 fps stepping, and share links that open at `?t=<seconds>`.
+
 ## Package and releases
 
 See [the package README](packages/seamplayer/README.md) for installation, props, and examples.
