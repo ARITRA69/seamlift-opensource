@@ -19,6 +19,9 @@ Object.assign(globalThis, {
   IS_REACT_ACT_ENVIRONMENT: true,
 });
 
+const hlsSupported = mock(() => false);
+mock.module("hls.js", () => ({ default: { isSupported: hlsSupported } }));
+
 let root: Root;
 let container: HTMLDivElement;
 const play = mock(() => Promise.resolve());
@@ -29,6 +32,8 @@ Object.defineProperties(window.HTMLMediaElement.prototype, {
 });
 
 beforeEach(() => {
+  hlsSupported.mockReset();
+  hlsSupported.mockImplementation(() => false);
   play.mockClear();
   pause.mockClear();
   window.localStorage.clear();
@@ -113,10 +118,17 @@ describe("player lifecycle", () => {
   });
 
   test("unsupported HLS reaches the callback and recovery UI", async () => {
-    const onError = mock(() => {});
+    const reported = (() => {
+      let resolve!: () => void;
+      const promise = new Promise<void>((done) => {
+        resolve = done;
+      });
+      return { promise, resolve };
+    })();
+    const onError = mock(() => reported.resolve());
     await render({ src: "/stream.m3u8", autoPlay: true, onError });
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await reported.promise;
     });
     expect(onError).toHaveBeenCalledWith(null);
     expect(container.textContent).toContain("Try again");
@@ -151,17 +163,20 @@ describe("player lifecycle", () => {
   });
 
   test("an HLS initialization exception reaches the recovery UI", async () => {
-    mock.module("hls.js", () => ({
-      default: {
-        isSupported() {
-          throw new Error("HLS initialization failed");
-        },
-      },
-    }));
-    const onError = mock(() => {});
+    hlsSupported.mockImplementationOnce(() => {
+      throw new Error("HLS initialization failed");
+    });
+    const reported = (() => {
+      let resolve!: () => void;
+      const promise = new Promise<void>((done) => {
+        resolve = done;
+      });
+      return { promise, resolve };
+    })();
+    const onError = mock(() => reported.resolve());
     await render({ src: "/stream.m3u8", autoPlay: true, onError });
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await reported.promise;
     });
     expect(onError).toHaveBeenCalledWith(null);
     expect(container.textContent).toContain("Try again");
