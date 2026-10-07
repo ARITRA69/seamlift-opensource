@@ -1,4 +1,4 @@
-import type { SeamPlayerProps, SeamTheme } from "seamplayer";
+import type { SeamPlayerProps } from "seamplayer";
 
 const sizes = [
   { height: 720, src: "/demo/film.mp4", bytes: 3274724 },
@@ -39,16 +39,3 @@ export const demoProps = {
   })),
   shareUrl: "/",
 } satisfies SeamPlayerProps;
-
-export const demoThemes = {
-  pop: {
-    accent: "var(--color-primary)",
-    accentText: "var(--color-primary-foreground)",
-    monoFont: "var(--font-mono)",
-  },
-  sun: {
-    accent: "var(--color-sun)",
-    accentText: "var(--color-sun-foreground)",
-    monoFont: "var(--font-mono)",
-  },
-} satisfies Record<"pop" | "sun", SeamTheme>;

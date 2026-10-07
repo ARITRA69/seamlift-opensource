@@ -18,7 +18,7 @@
     "check-types": "bun run build:player && bun run --filter seamplayer --filter @seamplayer/site check-types",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "bun run --filter seamplayer test",
+    "test": "bun run --filter seamplayer --filter @seamplayer/site test",
     "check": "bun run format:check && bun run lint && bun run build && bun run --filter seamplayer --filter @seamplayer/site check-types && bun run test",
     "verify:package": "bun run --filter seamplayer verify:package",
     "publish:player": "bun run --filter seamplayer release"

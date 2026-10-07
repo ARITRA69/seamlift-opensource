@@ -20,7 +20,7 @@ The site runs at http://localhost:3001. The player builds before the site starts
 
 ```sh
 bun run build          # player, then production website
-bun run check          # formatting, lint, both builds, types, player tests
+bun run check          # formatting, lint, both builds, types, player and example checks
 bun run verify:package # isolated React 18/19 tarball checks
 bun run format
 bun run lint
@@ -36,7 +36,9 @@ bun run --filter @seamplayer/site ui:add dialog
 
 `apps/site/components.json` configures component generation. `apps/site/src/app/globals.css` owns the site's semantic theme tokens. `apps/site/eslint.config.mjs` combines Next.js linting with all six `@shadcn/lint` rules as errors: component styling contracts, semantic colors, scale values, inline styles, known classes, and static classes. Edit component variants instead of restyling them at call sites.
 
-The live demo matches Seamlift’s brand-page player: three MP4 quality levels and downloads, seven chapters, English captions and caption sizes, filmstrip previews, Pop/Sun themes, saved playback position, 24 fps stepping, and share links that open at `?t=<seconds>`.
+The website is one page: a configurable player playground, its live preview, and the complete copyable React component. Media tools, playback options, appearance, imperative controls, and callbacks all feed the same typed configuration used by the preview and code generator. It starts with Seamlift’s full brand demo and supports your own MP4, WebM, or HLS URL. Demo metadata is omitted for custom media. Option changes remount the preview so initial playback props take effect.
+
+`bun run test` also typechecks the generated components for every combination of sources, refs, and callbacks. The page lists built-in keyboard and touch controls, and links to demo assets and the package API reference.
 
 ## Package and releases
 
