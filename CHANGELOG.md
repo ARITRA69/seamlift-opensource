@@ -3,6 +3,8 @@
 ## 0.1.1
 
 - Move development and publishing into the standalone `ARITRA69/seamplayer` repository.
+- Organize the repository into two Bun workspaces: `packages/seamplayer` and the Next.js/shadcn companion site at `apps/site`.
+- Enforce website styling with `@shadcn/lint` in CI.
 - Remove the Seamlift workspace configuration dependency.
 - Add CI, player regression tests, and packed-package checks for React 18 and 19, ESM, CommonJS, and TypeScript consumers.
 - Honor `startTime` during autoplay.

@@ -2,6 +2,3 @@ node_modules/
 dist/
 bun.lock
 coverage/
-
-.next/
-next-env.d.ts
