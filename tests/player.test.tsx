@@ -118,17 +118,13 @@ describe("player lifecycle", () => {
   });
 
   test("unsupported HLS reaches the callback and recovery UI", async () => {
-    const reported = (() => {
-      let resolve!: () => void;
-      const promise = new Promise<void>((done) => {
-        resolve = done;
-      });
-      return { promise, resolve };
-    })();
-    const onError = mock(() => reported.resolve());
+    const onError = mock(() => {});
+    const reported = new Promise<void>((resolve) => {
+      onError.mockImplementation(() => resolve());
+    });
     await render({ src: "/stream.m3u8", autoPlay: true, onError });
     await act(async () => {
-      await reported.promise;
+      await reported;
     });
     expect(onError).toHaveBeenCalledWith(null);
     expect(container.textContent).toContain("Try again");
@@ -166,17 +162,13 @@ describe("player lifecycle", () => {
     hlsSupported.mockImplementationOnce(() => {
       throw new Error("HLS initialization failed");
     });
-    const reported = (() => {
-      let resolve!: () => void;
-      const promise = new Promise<void>((done) => {
-        resolve = done;
-      });
-      return { promise, resolve };
-    })();
-    const onError = mock(() => reported.resolve());
+    const onError = mock(() => {});
+    const reported = new Promise<void>((resolve) => {
+      onError.mockImplementation(() => resolve());
+    });
     await render({ src: "/stream.m3u8", autoPlay: true, onError });
     await act(async () => {
-      await reported.promise;
+      await reported;
     });
     expect(onError).toHaveBeenCalledWith(null);
     expect(container.textContent).toContain("Try again");
