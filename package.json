@@ -1,0 +1,94 @@
+{
+  "name": "seamplayer",
+  "version": "0.1.1",
+  "description": "A video player for React: loads like an image, a filmstrip seek bar, chapters, quality, captions, downloads, links to a moment, and the shortcuts and gestures people already know.",
+  "keywords": [
+    "react",
+    "video",
+    "video-player",
+    "player",
+    "hls",
+    "chapters",
+    "captions"
+  ],
+  "homepage": "https://github.com/ARITRA69/seamplayer#readme",
+  "license": "MIT",
+  "author": "Seamlift",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup && bun scripts/copy-styles.ts",
+    "dev": "tsup --watch --onSuccess \"bun scripts/copy-styles.ts\"",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "bun test",
+    "check": "bun run format:check && bun run lint && bun run check-types && bun run build && bun test",
+    "prepack": "bun run build",
+    "prepublishOnly": "bun run check",
+    "verify:package": "bun scripts/verify-package.ts"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "hls.js": "^1.6.16"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsup": "^8.5.1",
+    "typescript": "5.9.2",
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^22.15.3",
+    "@types/react-dom": "19.2.2",
+    "@types/bun": "1.4.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "typescript-eslint": "^8.50.0",
+    "prettier": "^3.7.4",
+    "happy-dom": "^20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ARITRA69/seamplayer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ARITRA69/seamplayer/issues"
+  },
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
