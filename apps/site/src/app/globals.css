@@ -85,3 +85,19 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+@layer components {
+  .code-surface {
+    color: var(--code-color);
+    background: var(--code-background);
+    text-shadow: var(--code-text-shadow, none);
+    tab-size: 2;
+  }
+
+  .code-token {
+    color: var(--code-color, inherit);
+    font-style: var(--code-font-style, inherit);
+    font-weight: var(--code-font-weight, inherit);
+    text-decoration-line: var(--code-decoration, none);
+  }
+}

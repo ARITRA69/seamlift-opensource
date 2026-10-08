@@ -4,6 +4,7 @@ import { Suspense, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Copy, Pause, Play, RotateCcw, Code2 } from "lucide-react";
 import { SeamPlayer, type SeamPlayerHandle } from "seamplayer";
+import { CodeBlock, CodeThemeSelect } from "@/components/code-block";
 import { AccentSwitch } from "@/components/ui/accent-switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -407,22 +408,21 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
               />
               Your React code
             </h2>
-            <Button variant="outline" size="sm" onClick={copyCode}>
-              {copyState === "copied" ? (
-                <Check aria-hidden="true" />
-              ) : (
-                <Copy aria-hidden="true" />
-              )}
-              {copyState === "copied" ? "Copied" : "Copy code"}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <CodeThemeSelect label="Complete React example" />
+              <Button variant="outline" size="sm" onClick={copyCode}>
+                {copyState === "copied" ? (
+                  <Check aria-hidden="true" />
+                ) : (
+                  <Copy aria-hidden="true" />
+                )}
+                {copyState === "copied" ? "Copied" : "Copy code"}
+              </Button>
+            </div>
           </div>
-          <pre
-            tabIndex={0}
-            aria-label="Complete React example"
-            className="max-h-80 overflow-auto bg-muted p-5 text-xs leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <code>{code}</code>
-          </pre>
+          <CodeBlock label="Complete React example" embedded>
+            {code}
+          </CodeBlock>
           <div className="space-y-2 px-5 py-4 text-xs leading-relaxed text-muted-foreground">
             {copyState === "error" && (
               <p role="alert">

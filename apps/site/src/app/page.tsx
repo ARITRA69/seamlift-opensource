@@ -1,3 +1,4 @@
+import { CodeBlock } from "@/components/code-block";
 import { HeroDemo } from "@/components/hero-demo";
 import { PageNavigation } from "@/components/page-navigation";
 import { PlayerPlayground } from "@/components/player-playground";
@@ -73,18 +74,6 @@ const documentedProps = [
   ["fps", "Frame rate for stepping with the comma and period keys."],
 ] as const;
 
-function CodeBlock({ children, label }: { children: string; label: string }) {
-  return (
-    <pre
-      tabIndex={0}
-      aria-label={label}
-      className="overflow-x-auto rounded-lg border bg-muted/40 p-5 font-mono text-xs leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm"
-    >
-      <code>{children}</code>
-    </pre>
-  );
-}
-
 export default function Home() {
   return (
     <div id="top" className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -115,7 +104,7 @@ export default function Home() {
               >
                 Basic usage
               </h2>
-              <CodeBlock label="Install Seamplayer">
+              <CodeBlock label="Install Seamplayer" language="bash">
                 npm install seamplayer
               </CodeBlock>
               <CodeBlock label="Basic React example">{basicExample}</CodeBlock>

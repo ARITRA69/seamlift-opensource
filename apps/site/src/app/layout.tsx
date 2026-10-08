@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { CodeThemeProvider } from "@/components/code-block";
 import "./globals.css";
 import "seamplayer/styles.css";
 
@@ -12,7 +13,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <CodeThemeProvider>{children}</CodeThemeProvider>
+      </body>
     </html>
   );
 }
