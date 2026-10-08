@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Move the repository to `ARITRA69/seamlift-opensource`, home of Seamlift's open-source projects. Seamplayer's docs now live at https://opensource.seamlift.com/seamplayer.
+- Use Hugeicons for the player's icons. They are bundled into the build, so the package gains no dependency.
 
 ## 0.1.1
 

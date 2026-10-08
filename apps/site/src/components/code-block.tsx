@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, type CSSProperties } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import {
   CodeLanguageSelect,
   useCodeLanguage,
@@ -14,13 +14,17 @@ export function CodeBlock({
   children,
   label,
   language = "tsx",
-  embedded = false,
+  title,
+  scroll = false,
   javascriptCode,
 }: {
   children: string;
   label: string;
   language?: "tsx" | "bash";
-  embedded?: boolean;
+  /** Header text; defaults to "Terminal" or "React". */
+  title?: ReactNode;
+  /** Cap the height for long generated examples. */
+  scroll?: boolean;
   javascriptCode?: string;
 }) {
   const theme = usePageTheme();
@@ -33,22 +37,20 @@ export function CodeBlock({
         : "tsx";
   const code = syntax === "jsx" ? (javascriptCode ?? children) : children;
   return (
-    <div className={cn(!embedded && "overflow-hidden rounded-lg border")}>
-      {!embedded && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-5 py-3">
-          <span className="font-mono text-xs text-muted-foreground">
-            {language === "bash" ? "Terminal" : "React"}
-          </span>
-          <div className="flex items-center gap-2">
-            {language !== "bash" && <CodeLanguageSelect label={label} />}
-            <CopyCodeButton code={code} label={label} compact />
-          </div>
+    <div className="overflow-hidden rounded-lg border">
+      <div className="flex h-10 items-center justify-between gap-3 border-b bg-card pr-2 pl-4">
+        <span className="truncate text-xs font-medium text-muted-foreground">
+          {title ?? (language === "bash" ? "Terminal" : "React")}
+        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {language !== "bash" && <CodeLanguageSelect label={label} />}
+          <CopyCodeButton code={code} label={label} compact />
         </div>
-      )}
+      </div>
       <Highlight
         code={code}
         language={syntax}
-        theme={theme === "dark" ? themes.oneDark : themes.oneLight}
+        theme={theme === "dark" ? themes.nightOwl : themes.nightOwlLight}
       >
         {({ style, tokens, getTokenProps }) => (
           <pre
@@ -56,8 +58,8 @@ export function CodeBlock({
             aria-label={label}
             data-code-theme={theme}
             className={cn(
-              "code-surface overflow-auto p-5 font-mono text-xs leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:text-sm",
-              embedded && "max-h-80"
+              "code-surface overflow-auto p-4 font-mono text-code outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50",
+              scroll && "max-h-panel"
             )}
             style={
               {

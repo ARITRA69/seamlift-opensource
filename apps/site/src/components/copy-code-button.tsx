@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -34,7 +35,11 @@ export function CopyCodeButton({
         }
       }}
     >
-      {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+      {copied ? (
+        <HugeiconsIcon icon={Tick02Icon} aria-hidden="true" />
+      ) : (
+        <HugeiconsIcon icon={Copy01Icon} aria-hidden="true" />
+      )}
       {!compact && (copied ? "Copied" : "Copy code")}
     </Button>
   );

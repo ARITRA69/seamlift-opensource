@@ -990,7 +990,7 @@ export const SeamPlayer = forwardRef<SeamPlayerHandle, SeamPlayerProps>(
                 className="sp-pill sp-pill-accent"
                 onClick={replay}
               >
-                <Icon name="back" size={16} />
+                <Icon name="replay" size={16} />
                 Replay
               </button>
               {endAction && (

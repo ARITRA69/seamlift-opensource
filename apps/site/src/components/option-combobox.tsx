@@ -42,7 +42,7 @@ export function OptionCombobox<Value extends string>({
   options: readonly Option<Value>[];
   value: Value;
   onValueChange: (value: Value) => void;
-  size?: "xs" | "sm";
+  size?: "xs" | "sm" | "default";
   fullWidth?: boolean;
   searchable?: boolean;
 }) {

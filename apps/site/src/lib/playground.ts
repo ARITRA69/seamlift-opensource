@@ -149,7 +149,7 @@ export function buildPlayerProps(config: PlaygroundConfig): SeamPlayerProps {
       : config.source === "qualities"
         ? demoProps.download
         : demoProps.download[0];
-  if (config.share && !custom) props.shareUrl = "/";
+  if (config.share && !custom) props.shareUrl = "/seamplayer";
   if (config.startTime > 0) props.startTime = config.startTime;
   if (config.autoPlay) props.autoPlay = true;
   if (config.loop) props.loop = true;

@@ -17,11 +17,8 @@
   font-display: swap;
 }
 
-@custom-variant dark {
-  @media (prefers-color-scheme: dark) {
-    @slot;
-  }
-}
+/* The inline script in layout.tsx sets data-theme from the saved choice or the system. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme inline {
   --container-combobox: calc(var(--anchor-width) + var(--spacing) * 7);
@@ -49,6 +46,15 @@
   --color-ring: var(--ring);
   --color-sun: var(--sun);
   --color-sun-foreground: var(--sun-foreground);
+  --text-prose: 0.9375rem;
+  --text-prose--line-height: 1.75rem;
+  --text-nav: 0.8125rem;
+  --text-nav--line-height: 1.25rem;
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.375rem;
+  --spacing-header: calc(var(--spacing) * 14);
+  --spacing-panel: calc(100svh - var(--spacing) * 24);
+  --spacing-docs-viewport: calc(100svh - var(--spacing) * 14);
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-sans: "Instrument Sans", Arial, Helvetica, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
@@ -58,7 +64,7 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --radius: 0.625rem;
   --background: #fcfcfc;
   --foreground: #171717;
@@ -82,32 +88,34 @@
   --sun-foreground: #1a0b14;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #181a1f;
-    --foreground: #e6e8ed;
-    --card: #21242b;
-    --card-foreground: #e6e8ed;
-    --popover: #21242b;
-    --popover-foreground: #e6e8ed;
-    --primary: #e6e8ed;
-    --primary-foreground: #181a1f;
-    --secondary: #2a2e36;
-    --secondary-foreground: #e6e8ed;
-    --muted: #22252c;
-    --muted-foreground: #a1a7b3;
-    --accent: #2e333c;
-    --accent-foreground: #e6e8ed;
-    --destructive: #fb7185;
-    --border: #353a44;
-    --input: #414854;
-    --ring: #8993a3;
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #181a1f;
+  --foreground: #e6e8ed;
+  --card: #21242b;
+  --card-foreground: #e6e8ed;
+  --popover: #21242b;
+  --popover-foreground: #e6e8ed;
+  --primary: #e6e8ed;
+  --primary-foreground: #181a1f;
+  --secondary: #2a2e36;
+  --secondary-foreground: #e6e8ed;
+  --muted: #22252c;
+  --muted-foreground: #a1a7b3;
+  --accent: #2e333c;
+  --accent-foreground: #e6e8ed;
+  --destructive: #fb7185;
+  --border: #353a44;
+  --input: #414854;
+  --ring: #8993a3;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-padding-top: calc(var(--spacing) * 20);
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;

@@ -37,5 +37,5 @@ export const demoProps = {
     filename: `creators-around-the-world-${height}p.mp4`,
     size: bytes,
   })),
-  shareUrl: "/",
+  shareUrl: "/seamplayer",
 } satisfies SeamPlayerProps;

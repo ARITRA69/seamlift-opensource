@@ -2,9 +2,10 @@
 
 import { Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowDownRight, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight02Icon, ReplayIcon } from "@hugeicons/core-free-icons";
 import { SeamPlayer, type SeamPlayerHandle } from "seamplayer";
-import { PageLink } from "@/components/page-link";
 import { Button } from "@/components/ui/button";
 import { buildPlayerProps, defaultConfig } from "@/lib/playground";
 
@@ -31,31 +32,27 @@ function HeroDemoBody({ startTime = 0 }: { startTime?: number }) {
     startTime,
   });
   return (
-    <div className="flex flex-col items-center gap-7">
-      <div className="w-full max-w-lg" aria-label="Featured player demo">
+    <div className="space-y-4">
+      <div aria-label="Featured player demo">
         <SeamPlayer {...props} ref={player} />
       </div>
-      <p className="max-w-lg text-center text-lg leading-relaxed text-muted-foreground">
-        A video player for React.
-        <br />
-        Filmstrip seeking. Familiar controls. Yours to customize.
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
-          size="lg"
+          variant="secondary"
+          size="sm"
           onClick={() => {
             player.current?.seek(startTime);
             player.current?.play();
           }}
         >
-          <RotateCcw aria-hidden="true" />
+          <HugeiconsIcon icon={ReplayIcon} aria-hidden="true" />
           Replay demo
         </Button>
-        <Button asChild variant="ghost" size="lg">
-          <PageLink href="#playground">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/seamplayer/playground">
             Try the playground
-            <ArrowDownRight aria-hidden="true" />
-          </PageLink>
+            <HugeiconsIcon icon={ArrowRight02Icon} aria-hidden="true" />
+          </Link>
         </Button>
       </div>
     </div>
