@@ -10,12 +10,13 @@ import { SearchDialog } from "@/components/docs/search-dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { DocsProject } from "@/lib/docs";
 import { cn } from "@/lib/utils";
 
@@ -35,8 +36,8 @@ export function SiteHeader({ project }: { project: DocsProject }) {
         Skip to content
       </a>
       <div className="mx-auto flex h-header max-w-7xl items-center gap-3 px-4 sm:px-6">
-        <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
-          <DialogTrigger asChild>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon-sm"
@@ -45,32 +46,40 @@ export function SiteHeader({ project }: { project: DocsProject }) {
             >
               <HugeiconsIcon icon={Menu01Icon} aria-hidden="true" />
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-svh overflow-y-auto">
-            <DialogTitle>{project.name}</DialogTitle>
-            <DialogDescription className="sr-only">
-              Pages in the {project.name} docs.
-            </DialogDescription>
-            <nav aria-label="Site" className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link href="/" onClick={() => setMenuOpen(false)}>
-                  All projects
-                </Link>
-              </Button>
-              {others.map((link) => (
-                <Button key={link.href} asChild variant="outline" size="sm">
-                  <Link href={link.href} onClick={() => setMenuOpen(false)}>
-                    {link.title}
-                  </Link>
-                </Button>
-              ))}
-            </nav>
-            <DocsSidebar
-              project={project}
-              onNavigate={() => setMenuOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <SheetHeader>
+              <SheetTitle>{project.name}</SheetTitle>
+              <SheetDescription className="sr-only">
+                Pages in the {project.name} docs.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="flex-1 space-y-6 overflow-y-auto overscroll-contain px-2 py-4">
+              <nav aria-label="Site">
+                <ul className="space-y-px">
+                  {[{ title: "All projects", href: "/" }, ...others].map(
+                    (link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          onClick={() => setMenuOpen(false)}
+                          className="block rounded-md px-2.5 py-1.5 text-nav font-medium text-foreground/70 outline-none transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
+                        >
+                          {link.title}
+                        </Link>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </nav>
+              <div className="mx-2.5 border-t" />
+              <DocsSidebar
+                project={project}
+                onNavigate={() => setMenuOpen(false)}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
         <Link
           href="/"
           className="flex shrink-0 items-baseline gap-1.5 rounded-md text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
