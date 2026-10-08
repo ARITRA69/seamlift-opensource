@@ -9,13 +9,14 @@ import {
   type ReactNode,
 } from "react";
 import { Highlight, themes } from "prism-react-renderer";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { OptionCombobox } from "@/components/option-combobox";
 import { cn } from "@/lib/utils";
 
 type CodeTheme = "light" | "dark";
+const codeThemes = [
+  { value: "light", label: "Atom One Light" },
+  { value: "dark", label: "Atom One Dark" },
+] as const;
 const CodeThemeContext = createContext<{
   theme: CodeTheme;
   setTheme: (theme: CodeTheme) => void;
@@ -39,19 +40,13 @@ function useCodeTheme() {
 export function CodeThemeSelect({ label }: { label: string }) {
   const { theme, setTheme } = useCodeTheme();
   return (
-    <div className="w-44">
-      <NativeSelect
-        size="sm"
-        aria-label={`${label} color theme`}
-        value={theme}
-        onChange={(event) =>
-          setTheme(event.target.value === "dark" ? "dark" : "light")
-        }
-      >
-        <NativeSelectOption value="light">Atom One Light</NativeSelectOption>
-        <NativeSelectOption value="dark">Atom One Dark</NativeSelectOption>
-      </NativeSelect>
-    </div>
+    <OptionCombobox
+      label={`${label} color theme`}
+      options={codeThemes}
+      value={theme}
+      onValueChange={setTheme}
+      size="xs"
+    />
   );
 }
 

@@ -10,10 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { OptionCombobox } from "@/components/option-combobox";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -24,6 +21,24 @@ import {
   validMediaUrl,
   type PlaygroundConfig,
 } from "@/lib/playground";
+
+const sourceOptions = [
+  { value: "qualities", label: "Demo · 720p / 480p / 360p" },
+  { value: "single", label: "Demo · single MP4" },
+  { value: "custom", label: "Your MP4, WebM, or HLS URL" },
+] as const;
+
+const radiusOptions = [
+  { value: "0px", label: "Square" },
+  { value: "8px", label: "8px" },
+  { value: "16px", label: "16px" },
+  { value: "24px", label: "24px" },
+] as const;
+
+const fontOptions = [
+  { value: "brand", label: "Brand" },
+  { value: "system", label: "System" },
+] as const;
 
 export function PlayerPlayground() {
   return (
@@ -119,26 +134,14 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
         </div>
         <div className="space-y-5 p-5">
           <Field id="source" label="Video source">
-            <NativeSelect
+            <OptionCombobox
               id="source"
+              label="Video source"
+              options={sourceOptions}
               value={config.source}
-              onChange={(event) =>
-                update(
-                  "source",
-                  event.target.value as PlaygroundConfig["source"]
-                )
-              }
-            >
-              <NativeSelectOption value="qualities">
-                Demo · 720p / 480p / 360p
-              </NativeSelectOption>
-              <NativeSelectOption value="single">
-                Demo · single MP4
-              </NativeSelectOption>
-              <NativeSelectOption value="custom">
-                Your MP4, WebM, or HLS URL
-              </NativeSelectOption>
-            </NativeSelect>
+              onValueChange={(value) => update("source", value)}
+              fullWidth
+            />
           </Field>
           {custom && (
             <div className="space-y-3">
@@ -283,33 +286,24 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
           />
           <div className="grid grid-cols-2 gap-3">
             <Field id="radius" label="Corners">
-              <NativeSelect
+              <OptionCombobox
                 id="radius"
+                label="Corners"
+                options={radiusOptions}
                 value={config.radius}
-                onChange={(event) =>
-                  update(
-                    "radius",
-                    event.target.value as PlaygroundConfig["radius"]
-                  )
-                }
-              >
-                <NativeSelectOption value="0px">Square</NativeSelectOption>
-                <NativeSelectOption value="8px">8px</NativeSelectOption>
-                <NativeSelectOption value="16px">16px</NativeSelectOption>
-                <NativeSelectOption value="24px">24px</NativeSelectOption>
-              </NativeSelect>
+                onValueChange={(value) => update("radius", value)}
+                fullWidth
+              />
             </Field>
             <Field id="font" label="Font">
-              <NativeSelect
+              <OptionCombobox
                 id="font"
+                label="Font"
+                options={fontOptions}
                 value={config.font}
-                onChange={(event) =>
-                  update("font", event.target.value as PlaygroundConfig["font"])
-                }
-              >
-                <NativeSelectOption value="brand">Brand</NativeSelectOption>
-                <NativeSelectOption value="system">System</NativeSelectOption>
-              </NativeSelect>
+                onValueChange={(value) => update("font", value)}
+                fullWidth
+              />
             </Field>
           </div>
         </div>
