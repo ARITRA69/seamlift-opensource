@@ -17,6 +17,12 @@ for (const Player of [SeamPlayer, require("seamplayer").SeamPlayer]) {
   );
   assert(html.includes("Play Film"));
   assert(!html.includes("<video"));
+  assert(
+    html.includes("<style"),
+    "SSR must include styles without a CSS import"
+  );
+  assert(html.includes(":where(.sp)"));
+  assert(html.includes('"JetBrains Mono"'), "CSS must remain unescaped");
 }
 const css = readFileSync(require.resolve("seamplayer/styles.css"), "utf8");
 assert(css.includes(".sp"));

@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { CodeLanguageProvider } from "@/components/code-language";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import "seamplayer/styles.css";
 
 export const metadata: Metadata = {
   title: "Seamplayer | A video player for React",

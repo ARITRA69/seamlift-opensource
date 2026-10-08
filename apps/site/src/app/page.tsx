@@ -6,7 +6,6 @@ import { PlayerPlayground } from "@/components/player-playground";
 import { generateExample } from "@/lib/playground";
 
 const basicExample = `import { SeamPlayer } from "seamplayer";
-import "seamplayer/styles.css";
 
 export default function Film() {
   return (
@@ -117,9 +116,9 @@ export default function Home() {
               </CodeBlock>
               <CodeBlock label="Basic React example">{basicExample}</CodeBlock>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Import the player and its stylesheet. It fills its container at
-                16:9 and loads video when someone presses play. Supports React
-                18 and 19, MP4, WebM, and HLS.
+                Import the player. Default styles are included automatically. It
+                fills its container at 16:9 and loads video when someone presses
+                play. Supports React 18 and 19, MP4, WebM, and HLS.
               </p>
             </section>
             <section

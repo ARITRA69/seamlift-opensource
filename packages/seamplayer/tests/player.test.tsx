@@ -59,6 +59,20 @@ function metadata(video: HTMLVideoElement, duration = 120) {
 }
 
 describe("player lifecycle", () => {
+  test("includes styles and allows per-player color overrides", async () => {
+    await render({
+      src: "/film.mp4",
+      theme: { background: "navy", surface: "blue", text: "ivory" },
+    });
+    expect(document.querySelector("style")?.textContent).toContain(
+      ":where(.sp)"
+    );
+    const player = container.querySelector<HTMLElement>(".sp")!;
+    expect(player.style.getPropertyValue("--sp-bg")).toBe("navy");
+    expect(player.style.getPropertyValue("--sp-surface")).toBe("blue");
+    expect(player.style.getPropertyValue("--sp-text")).toBe("ivory");
+  });
+
   test("loads no media until play, then honors the starting moment", async () => {
     await render({
       src: "/film.mp4",

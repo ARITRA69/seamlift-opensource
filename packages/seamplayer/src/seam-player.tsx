@@ -9,6 +9,7 @@ import {
   type PointerEvent,
 } from "react";
 import type Hls from "hls.js";
+import styles from "./styles.css" with { type: "text" };
 import { Icon, type IconName } from "./icons";
 import { PlayerButton, ShortcutSheet, VolumeControl } from "./controls";
 import { SPEEDS, SettingsMenu, type CaptionSize } from "./menu";
@@ -729,6 +730,13 @@ export const SeamPlayer = forwardRef<SeamPlayerHandle, SeamPlayerProps>(
     const themeVars = {
       ...(theme?.accent && { "--sp-accent": theme.accent }),
       ...(theme?.accentText && { "--sp-accent-text": theme.accentText }),
+      ...(theme?.background && { "--sp-bg": theme.background }),
+      ...(theme?.surface && { "--sp-surface": theme.surface }),
+      ...(theme?.text && { "--sp-text": theme.text }),
+      ...(theme?.highlight && { "--sp-highlight": theme.highlight }),
+      ...(theme?.highlightText && {
+        "--sp-highlight-text": theme.highlightText,
+      }),
       ...(theme?.radius && { "--sp-radius": theme.radius }),
       ...(theme?.font && { "--sp-font": theme.font }),
       ...(theme?.monoFont && { "--sp-font-mono": theme.monoFont }),
@@ -752,6 +760,12 @@ export const SeamPlayer = forwardRef<SeamPlayerHandle, SeamPlayerProps>(
         onPointerLeave={() => playing && !menu && setControlsShown(false)}
         onContextMenu={(e) => fast && e.preventDefault()}
       >
+        {/* Static package CSS: keep quotes intact in React 18 server output. */}
+        <style
+          href="seamplayer"
+          precedence="seamplayer"
+          dangerouslySetInnerHTML={{ __html: styles }}
+        />
         {activated ? (
           <video
             ref={videoRef}

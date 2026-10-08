@@ -53,6 +53,16 @@ export type SeamTheme = {
   accent?: string;
   /** text and icons on the accent; default #ffffff */
   accentText?: string;
+  /** player background; default #15121a */
+  background?: string;
+  /** control surfaces; default #15121a */
+  surface?: string;
+  /** text and icons; default #ffffff */
+  text?: string;
+  /** highlighted moments; default #ffd23f */
+  highlight?: string;
+  /** text on highlights; default #1a0b14 */
+  highlightText?: string;
   /** corner radius of the player; default 16px */
   radius?: string;
   /** default inherits the page font */

@@ -189,7 +189,6 @@ export function generateExample(
   return `"use client";
 
 ${hooks.length ? `import { ${hooks.join(", ")} } from "react";\n` : ""}import { SeamPlayer${typescript ? `, type ${types.join(", type ")}` : ""} } from "seamplayer";
-import "seamplayer/styles.css";
 
 const options = ${JSON.stringify(props, null, 2)}${typescript ? " satisfies SeamPlayerProps" : ""};
 

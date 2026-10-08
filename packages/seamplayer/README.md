@@ -21,7 +21,6 @@ React 18 or 19.
 
 ```tsx
 import { SeamPlayer } from "seamplayer";
-import "seamplayer/styles.css";
 
 export const Launch = () => (
   <SeamPlayer
@@ -32,7 +31,7 @@ export const Launch = () => (
 );
 ```
 
-The player fills its container's width at 16:9.
+The player includes its default styles automatically, including during server rendering. No CSS import or separate download is needed. It fills its container's width at 16:9.
 
 ### Several sizes
 
@@ -120,7 +119,7 @@ player.current?.video; // the <video> element, once it exists
 
 ### Style it
 
-`theme` covers the common cases. Every colour, the radius and the easing are CSS variables on `.sp`, so you can also set them in your own CSS:
+`theme` controls accent, background, surface, text and highlight colors, corners and fonts. Translucent controls follow these colors automatically. Every colour, the radius and the easing are CSS variables on `.sp`, so you can also set them in your own CSS:
 
 ```css
 .sp {
