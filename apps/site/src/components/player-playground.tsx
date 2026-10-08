@@ -102,13 +102,12 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
 
   return (
     <section
-      id="playground"
       aria-label="Player playground"
-      className="grid items-start gap-6 md:grid-cols-3 lg:gap-8"
+      className="grid scroll-mt-10 items-start gap-6 md:grid-cols-3"
     >
       <aside
         aria-label="Player options"
-        className="min-w-0 rounded-2xl border bg-card max-h-96 overflow-y-auto md:sticky md:top-6 md:max-h-112"
+        className="min-w-0 rounded-lg border bg-card max-h-96 overflow-y-auto md:sticky md:top-6 md:max-h-112"
       >
         <div className="flex items-center justify-between gap-3 border-b px-5 py-4">
           <h2 className="font-semibold">Your player</h2>
@@ -395,7 +394,7 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
         </section>
         <section
           aria-labelledby="code-title"
-          className="overflow-hidden rounded-2xl border bg-card"
+          className="overflow-hidden rounded-lg border bg-card"
         >
           <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
             <h2
@@ -445,7 +444,7 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
         </section>
         <section
           aria-labelledby="built-in-title"
-          className="space-y-4 rounded-2xl border bg-card p-5"
+          className="space-y-4 rounded-lg border bg-card p-5"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="built-in-title" className="font-semibold">
