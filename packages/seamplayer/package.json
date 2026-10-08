@@ -1,6 +1,6 @@
 {
   "name": "seamplayer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A video player for React: loads like an image, a filmstrip seek bar, chapters, quality, captions, downloads, links to a moment, and the shortcuts and gestures people already know.",
   "keywords": [
     "react",
