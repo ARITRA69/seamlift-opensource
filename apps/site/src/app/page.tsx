@@ -1,5 +1,6 @@
 import { CodeBlock } from "@/components/code-block";
 import { HeroDemo } from "@/components/hero-demo";
+import { PageLink } from "@/components/page-link";
 import { PageNavigation } from "@/components/page-navigation";
 import { PlayerPlayground } from "@/components/player-playground";
 import { generateExample } from "@/lib/playground";
@@ -76,12 +77,12 @@ const documentedProps = [
 
 export default function Home() {
   return (
-    <div id="top" className="mx-auto max-w-6xl px-5 sm:px-8">
+    <div id="top" tabIndex={-1} className="mx-auto max-w-6xl px-5 sm:px-8">
       <header className="flex items-center justify-center gap-2 pt-10 pb-7 sm:pt-12">
         <h1 className="text-lg font-semibold tracking-tight">
-          <a href="#top" aria-label="Seamplayer home">
+          <PageLink href="#top" aria-label="Seamplayer home">
             seamplayer
-          </a>
+          </PageLink>
         </h1>
         <span className="text-muted-foreground">for</span>
         <span className="text-sm font-medium">React</span>
@@ -95,6 +96,7 @@ export default function Home() {
           <div className="min-w-0 space-y-20 lg:col-span-4">
             <section
               id="basic-usage"
+              tabIndex={-1}
               aria-labelledby="usage-title"
               className="max-w-2xl scroll-mt-10 space-y-5"
             >
@@ -136,6 +138,7 @@ export default function Home() {
             </section>
             <section
               id="props"
+              tabIndex={-1}
               aria-labelledby="props-title"
               className="max-w-2xl scroll-mt-10 space-y-6"
             >
@@ -178,6 +181,7 @@ export default function Home() {
             </section>
             <section
               id="styling"
+              tabIndex={-1}
               aria-labelledby="styling-title"
               className="max-w-2xl scroll-mt-10 space-y-5"
             >
@@ -201,6 +205,7 @@ export default function Home() {
             </section>
             <section
               id="react-api"
+              tabIndex={-1}
               aria-labelledby="api-title"
               className="max-w-2xl scroll-mt-10 space-y-5"
             >

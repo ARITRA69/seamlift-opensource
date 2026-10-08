@@ -4,6 +4,7 @@ import { Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowDownRight, RotateCcw } from "lucide-react";
 import { SeamPlayer, type SeamPlayerHandle } from "seamplayer";
+import { PageLink } from "@/components/page-link";
 import { Button } from "@/components/ui/button";
 import { buildPlayerProps, defaultConfig } from "@/lib/playground";
 
@@ -51,10 +52,10 @@ function HeroDemoBody({ startTime = 0 }: { startTime?: number }) {
           Replay demo
         </Button>
         <Button asChild variant="ghost" size="lg">
-          <a href="#playground">
+          <PageLink href="#playground">
             Try the playground
             <ArrowDownRight aria-hidden="true" />
-          </a>
+          </PageLink>
         </Button>
       </div>
     </div>

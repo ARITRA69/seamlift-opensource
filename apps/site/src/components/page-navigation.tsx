@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BookOpen, Github, Package, SlidersHorizontal } from "lucide-react";
+import { PageLink } from "@/components/page-link";
 import { cn } from "@/lib/utils";
 
 const sections = [
@@ -15,6 +16,13 @@ const sections = [
 export function PageNavigation() {
   const [active, setActive] = useState<string>("basic-usage");
   useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname + window.location.search
+      );
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         const section = entries.find((entry) => entry.isIntersecting);
@@ -66,7 +74,7 @@ export function PageNavigation() {
         className="flex flex-wrap gap-x-6 gap-y-3 text-sm lg:sticky lg:top-12 lg:flex-col lg:items-start lg:gap-5"
       >
         {sections.map((section) => (
-          <a
+          <PageLink
             key={section.id}
             href={`#${section.id}`}
             aria-current={active === section.id ? "location" : undefined}
@@ -78,7 +86,7 @@ export function PageNavigation() {
             )}
           >
             {section.label}
-          </a>
+          </PageLink>
         ))}
       </nav>
       <nav
@@ -86,7 +94,7 @@ export function PageNavigation() {
         className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-3xl border border-border/60 bg-muted/95 p-2 shadow-sm backdrop-blur-lg"
       >
         {dock.map(({ label, href, icon: Icon, selected }) => (
-          <a
+          <PageLink
             key={label}
             href={href}
             aria-current={selected ? "location" : undefined}
@@ -99,7 +107,7 @@ export function PageNavigation() {
           >
             <Icon className="size-5" aria-hidden="true" />
             {label}
-          </a>
+          </PageLink>
         ))}
       </nav>
     </>
