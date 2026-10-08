@@ -1,15 +1,19 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type Options } from "tsup";
 
-export default defineConfig({
-  entry: ["src/index.ts"],
+const shared: Options = {
   format: ["esm", "cjs"],
   dts: true,
-  loader: { ".css": "text" },
+  loader: { ".css": "text" as const },
   sourcemap: true,
-  clean: true,
   target: "es2020",
-  // hls.js stays a separate import, so apps only download it for HLS
   external: ["react", "react-dom", "hls.js"],
-  // the player uses state and effects: a client component in Next.js
-  banner: { js: '"use client";' },
-});
+};
+export default defineConfig([
+  {
+    ...shared,
+    entry: { index: "src/index.ts", react: "src/react.tsx" },
+    clean: true,
+    banner: { js: '"use client";' },
+  },
+  { ...shared, entry: { core: "src/core.ts", element: "src/element.ts" } },
+]);

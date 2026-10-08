@@ -7,6 +7,8 @@ import {
 } from "@/components/code-language";
 import { CopyCodeButton } from "@/components/copy-code-button";
 import { Highlight, themes } from "prism-react-renderer";
+import BashPrism from "prismjs";
+import "prismjs/components/prism-bash";
 import { usePageTheme } from "@/lib/use-page-theme";
 import { cn } from "@/lib/utils";
 
@@ -20,8 +22,8 @@ export function CodeBlock({
 }: {
   children: string;
   label: string;
-  language?: "tsx" | "bash";
-  /** Header text; defaults to "Terminal" or "React". */
+  language?: "tsx" | "bash" | "typescript" | "markup";
+  /** Header text; defaults to the language’s header. */
   title?: ReactNode;
   /** Cap the height for long generated examples. */
   scroll?: boolean;
@@ -30,25 +32,32 @@ export function CodeBlock({
   const theme = usePageTheme();
   const { language: exampleLanguage } = useCodeLanguage();
   const syntax =
-    language === "bash"
-      ? "bash"
-      : exampleLanguage === "javascript"
+    language === "tsx"
+      ? exampleLanguage === "javascript"
         ? "jsx"
-        : "tsx";
+        : "tsx"
+      : language;
   const code = syntax === "jsx" ? (javascriptCode ?? children) : children;
   return (
     <div className="overflow-hidden rounded-lg border">
       <div className="flex h-10 items-center justify-between gap-3 border-b bg-card pr-2 pl-4">
         <span className="truncate text-xs font-medium text-muted-foreground">
-          {title ?? (language === "bash" ? "Terminal" : "React")}
+          {title ??
+            {
+              bash: "Bash",
+              tsx: "React",
+              typescript: "TypeScript",
+              markup: "HTML / component",
+            }[language]}
         </span>
         <div className="flex shrink-0 items-center gap-1.5">
-          {language !== "bash" && <CodeLanguageSelect label={label} />}
+          {language === "tsx" && <CodeLanguageSelect label={label} />}
           <CopyCodeButton code={code} label={label} compact />
         </div>
       </div>
       <Highlight
         code={code}
+        prism={syntax === "bash" ? BashPrism : undefined}
         language={syntax}
         theme={theme === "dark" ? themes.nightOwl : themes.nightOwlLight}
       >

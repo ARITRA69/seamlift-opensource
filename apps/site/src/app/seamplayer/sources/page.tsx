@@ -55,8 +55,8 @@ export default function SourcesPage() {
         <P>
           Pass an <Code>.m3u8</Code> playlist. Quality levels come from the
           stream itself. Browsers that play HLS natively, like Safari, use it
-          directly; others load hls.js on the first play, so it never weighs
-          down the page.
+          directly; others load <Code>hls.js</Code> on the first play, so it
+          never weighs down the page.
         </P>
         <CodeBlock label="HLS example">{hlsExample}</CodeBlock>
       </Section>

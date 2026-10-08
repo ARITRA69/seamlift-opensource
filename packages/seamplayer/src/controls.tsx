@@ -1,11 +1,5 @@
-import {
-  useRef,
-  type CSSProperties,
-  type KeyboardEvent,
-  type PointerEvent,
-  type ReactNode,
-} from "react";
 import { Icon } from "./icons";
+import type { Child } from "./jsx/dom";
 import { clamp, cx } from "./utils";
 
 /** A round icon button on the dark bar; bigger under a finger. */
@@ -20,7 +14,7 @@ export const PlayerButton = ({
   onClick: () => void;
   pressed?: boolean;
   className?: string;
-  children: ReactNode;
+  children: Child;
 }) => (
   <button
     type="button"
@@ -40,20 +34,21 @@ export const Slider = ({
   value,
   valueText,
   onChange,
+  drag,
 }: {
   label: string;
   value: number;
   valueText: string;
   onChange: (value: number) => void;
+  /** whether a pointer is dragging it, kept by the owner across renders */
+  drag: { active: boolean };
 }) => {
-  const dragging = useRef(false);
-
-  const valueAt = (e: PointerEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+  const valueAt = (e: PointerEvent) => {
+    const rect = (e.currentTarget as Element).getBoundingClientRect();
     return clamp((e.clientX - rect.left) / rect.width, 0, 1);
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     const step = (
       {
         ArrowLeft: -0.05,
@@ -80,14 +75,14 @@ export const Slider = ({
       className="sp-slider"
       onKeyDown={onKeyDown}
       onPointerDown={(e) => {
-        e.currentTarget.setPointerCapture(e.pointerId);
-        dragging.current = true;
+        (e.currentTarget as Element).setPointerCapture(e.pointerId);
+        drag.active = true;
         onChange(valueAt(e));
       }}
-      onPointerMove={(e) => dragging.current && onChange(valueAt(e))}
-      onPointerUp={() => (dragging.current = false)}
-      onPointerCancel={() => (dragging.current = false)}
-      style={{ "--sp-level": `${value * 100}%` } as CSSProperties}
+      onPointerMove={(e) => drag.active && onChange(valueAt(e))}
+      onPointerUp={() => (drag.active = false)}
+      onPointerCancel={() => (drag.active = false)}
+      style={{ "--sp-level": `${value * 100}%` }}
     >
       <span className="sp-slider-track">
         <span className="sp-slider-fill" />
@@ -106,11 +101,13 @@ export const VolumeControl = ({
   muted,
   onVolume,
   onToggleMute,
+  drag,
 }: {
   volume: number;
   muted: boolean;
   onVolume: (volume: number) => void;
   onToggleMute: () => void;
+  drag: { active: boolean };
 }) => {
   const level = muted ? 0 : volume;
   return (
@@ -136,6 +133,7 @@ export const VolumeControl = ({
             value={level}
             valueText={`${Math.round(level * 100)}%`}
             onChange={onVolume}
+            drag={drag}
           />
         </div>
       </div>

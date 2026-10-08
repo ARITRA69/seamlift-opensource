@@ -5,6 +5,12 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
+    // the player's views use its own small DOM runtime; react.tsx opts back
+    // into React with a pragma
+    "jsxImportSource": "seamplayer-jsx",
+    "paths": {
+      "seamplayer-jsx/*": ["./src/jsx/*"]
+    },
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "isolatedModules": true,

@@ -1,6 +1,6 @@
 # seamplayer
 
-A video player for React that loads like an image and plays like the players people already know.
+A video player for React, Astro, Svelte, Vue and plain JavaScript that loads like an image and plays like the players people already know.
 
 - **Poster first.** Until someone presses play, it's a picture and a button. The video, and hls.js for HLS streams, load on the first play.
 - **A filmstrip seek bar.** Give it a sprite sheet of frames and the bar opens into the video's real frames as the pointer comes near, with the frame under the pointer magnified.
@@ -15,7 +15,7 @@ A video player for React that loads like an image and plays like the players peo
 npm install seamplayer
 ```
 
-React 18 or 19.
+React 18 or 19 for the React adapter. Other web frameworks use the `core` or `element` entries with no React dependency.
 
 ## Use
 
@@ -133,6 +133,59 @@ player.current?.video; // the <video> element, once it exists
 ## Server rendering
 
 The player renders on the server as its poster and button, and reads storage only in the browser. Its build starts with `"use client"`, so it works in Next.js app router pages without a wrapper.
+
+## Astro, Svelte, Vue and plain HTML
+
+The controls use a framework-free DOM core. React is only needed when importing `seamplayer` or `seamplayer/react`; the `core` and `element` entries do not require it.
+
+```html
+<seam-player src="/film.mp4" poster="/poster.jpg" title="Film"></seam-player>
+```
+
+```ts
+import "seamplayer/element"; // registers <seam-player> once
+const player = document.querySelector("seam-player")!;
+player.chapters = [{ start: 0, title: "Intro" }];
+player.theme = { accent: "#e0115f" };
+player.addEventListener("timeupdate", (event) => {
+  console.log((event as CustomEvent<number>).detail);
+});
+player.play();
+player.seek(30);
+```
+
+String attributes: `src`, `poster`, `title`, `share-url`, `resume-key`. Number attributes: `duration`, `start-time`, `fps`. Boolean attributes: `autoplay`, `loop` (presence enables, `="false"` disables). Rich data (`chapters`, `captions`, `thumbnails`, `download`, `theme`, `endAction`, source arrays) can be assigned as properties or JSON attributes; `endAction` uses the `end-action` attribute. `options` accepts a complete `SeamPlayerOptions` object. Events are `play`, `pause`, `ended`, `timeupdate` (seconds in `detail`), and `error` (a MediaError or null in `detail`).
+
+Attributes and properties update the existing player. Removing it releases media and listeners; reconnecting starts a fresh player. Properties set before registration are preserved. Use `class` and CSS variables for styling the element, or put `style` and `className` in `options`.
+
+For server-rendered Astro pages, import `renderPoster` from `seamplayer/core` and `seamplayer/styles.css`, then put the poster HTML inside the custom element. This shows the poster before JavaScript runs. Svelte can register the element inside `onMount` for SSR. Complete components are in [the framework examples](../../examples/README.md).
+
+## Plain JavaScript API
+
+```ts
+import { createSeamPlayer } from "seamplayer/core";
+const player = createSeamPlayer(
+  document.querySelector<HTMLElement>("#player")!,
+  {
+    src: "/film.mp4",
+    poster: "/poster.jpg",
+    title: "Film",
+  }
+);
+player.update({ src: "/next.mp4", title: "Next film" });
+player.play();
+player.pause();
+player.seek(10);
+player.destroy(); // release media, listeners, timers and DOM
+```
+
+`player.video` is null until playback activates the video. `update` replaces the options while retaining the current player and controls; autoplay and start time initialize playback. Styles inject once per document or shadow root.
+
+## Expo and React Native
+
+Copy the [Expo DOM example](../../examples/expo/SeamPlayerDOM.tsx) into an Expo app. The `"use dom"` file imports `SeamPlayer` from `seamplayer/react`, while the native screen imports that file as a component. Data crossing the bridge must be serializable and native callbacks must be top-level asynchronous actions. See [Expo's DOM documentation](https://docs.expo.dev/guides/dom-components/) for SDK-specific setup.
+
+This uses a webview on iOS/Android and the same player directly on web. It preserves the web controls; native lock-screen media controls and native picture-in-picture are not implemented. Bare React Native apps need an Expo DOM setup or their own webview integration.
 
 ## Development
 

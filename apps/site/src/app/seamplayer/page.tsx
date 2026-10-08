@@ -15,9 +15,9 @@ export default function IntroductionPage() {
           <strong>
             Until someone presses play, it’s a picture and a button.
           </strong>{" "}
-          The video, and hls.js for HLS streams, load on the first play. Then it
-          behaves like the players people already know, down to the keyboard
-          shortcuts.
+          The video, and <Code>hls.js</Code> for HLS streams, load on the first
+          play. Then it behaves like the players people already know, down to
+          the keyboard shortcuts.
         </P>
       </div>
       <Section id="features" title="Features">

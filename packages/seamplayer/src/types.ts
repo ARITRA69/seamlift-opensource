@@ -1,5 +1,3 @@
-import type { CSSProperties } from "react";
-
 /** The same video in one MP4/WebM size. */
 export type SeamSource = {
   src: string;
@@ -80,7 +78,9 @@ export type SeamPlayerHandle = {
   readonly video: HTMLVideoElement | null;
 };
 
-export type SeamPlayerProps = {
+/** What every version of the player takes: the React props, the element's
+ * properties, and createSeamPlayer's options. */
+export type SeamPlayerOptions = {
   /**
    * An MP4/WebM file, an HLS playlist (.m3u8), or the same video in several
    * MP4 sizes. With sizes, Quality switches between them and Auto picks the
@@ -122,11 +122,21 @@ export type SeamPlayerProps = {
   theme?: SeamTheme;
   /** a button on the end screen, next to Replay */
   endAction?: { label: string; href: string };
+  /** added to the player's root element, next to "sp" */
   className?: string;
-  style?: CSSProperties;
+  /** inline styles on the root; camelCase or --custom-property names */
+  style?: Record<string, string | number | undefined>;
   onPlay?: () => void;
   onPause?: () => void;
   onEnded?: () => void;
   onTimeUpdate?: (time: number) => void;
   onError?: (error: MediaError | null) => void;
+};
+
+/** A player made with createSeamPlayer. */
+export type SeamPlayerInstance = SeamPlayerHandle & {
+  /** apply new options; anything left out goes back to its default */
+  update: (options: SeamPlayerOptions) => void;
+  /** stop playback, remove the player's elements and listeners */
+  destroy: () => void;
 };
