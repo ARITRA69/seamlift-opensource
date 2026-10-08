@@ -1,6 +1,6 @@
 {
   "name": "seamplayer",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A poster-first video player for React, Astro, Svelte, Vue and plain JavaScript, with a filmstrip timeline, chapters, captions and quality controls.",
   "keywords": [
     "react",

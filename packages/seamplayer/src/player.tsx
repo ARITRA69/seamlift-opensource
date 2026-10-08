@@ -35,7 +35,23 @@ const SAVE_EVERY_S = 3;
 const RESUME_MARGIN_S = 5;
 
 const PREFS_KEY = "seamplayer:prefs";
+// The skip the lock screen, headset and media keys ask for when they don't say.
+const MEDIA_SKIP_S = 10;
 const resumeStorageKey = (key: string) => `seamplayer:resume:${key}`;
+
+// The page has one media session; the player that played last owns it.
+let mediaSessionOwner: object | null = null;
+const MEDIA_ACTIONS = [
+  "play",
+  "pause",
+  "seekbackward",
+  "seekforward",
+  "seekto",
+] as const;
+const mediaSession = () =>
+  typeof navigator !== "undefined" && "mediaSession" in navigator
+    ? navigator.mediaSession
+    : null;
 
 type Flash = { key: number; icon?: IconName; text?: string };
 type Ripple = { key: number; side: "left" | "right"; seconds: number };
@@ -208,6 +224,8 @@ class Player implements SeamPlayerInstance {
   // saving waits for the loaded settings, or the defaults would be written
   // over them first
   private prefsReady = false;
+  // which player holds the page's media session
+  private readonly mediaToken = {};
 
   constructor(
     private readonly root: HTMLElement,
@@ -259,6 +277,10 @@ class Player implements SeamPlayerInstance {
     root.ownerDocument.addEventListener(
       "fullscreenchange",
       this.onFullscreenChange
+    );
+    root.ownerDocument.addEventListener(
+      "visibilitychange",
+      this.onVisibilityChange
     );
     this.flush();
   }
@@ -349,7 +371,9 @@ class Player implements SeamPlayerInstance {
     this.settings?.dispose();
     const doc = this.root.ownerDocument;
     doc.removeEventListener("fullscreenchange", this.onFullscreenChange);
+    doc.removeEventListener("visibilitychange", this.onVisibilityChange);
     doc.removeEventListener("pointerdown", this.onOutsideDown);
+    this.releaseMediaSession();
     render(null, this.root);
     patchProps(this.root, this.rootProps, {});
     this.root.classList.remove(...this.rootClasses);
@@ -663,6 +687,14 @@ class Player implements SeamPlayerInstance {
     this.timers.delete(name);
   }
 
+  // a closed or backgrounded tab keeps its place to the second
+  private readonly onVisibilityChange = () => {
+    const video = this.videoEl;
+    if (video && this.root.ownerDocument.visibilityState === "hidden") {
+      this.savePosition(video.currentTime, video.duration);
+    }
+  };
+
   private readonly onFullscreenChange = () =>
     this.set({
       fullscreen: this.root.ownerDocument.fullscreenElement === this.root,
@@ -695,6 +727,76 @@ class Player implements SeamPlayerInstance {
     doc.removeEventListener("pointerdown", this.onOutsideDown);
     if (settings) doc.addEventListener("pointerdown", this.onOutsideDown);
     this.set({ menu });
+  }
+
+  // ── the lock screen, headset and media keys ────────────────────────────
+
+  private claimMediaSession() {
+    const session = mediaSession();
+    if (!session) return;
+    mediaSessionOwner = this.mediaToken;
+    const { title, poster } = this.o;
+    if (typeof MediaMetadata !== "undefined") {
+      session.metadata = new MediaMetadata({
+        title: title ?? "",
+        artwork: poster
+          ? [{ src: new URL(poster, window.location.href).href }]
+          : [],
+      });
+    }
+    const handlers: Record<
+      (typeof MEDIA_ACTIONS)[number],
+      MediaSessionActionHandler
+    > = {
+      play: () => this.play(),
+      pause: () => this.pause(),
+      seekbackward: (d) => this.skip(-(d.seekOffset ?? MEDIA_SKIP_S)),
+      seekforward: (d) => this.skip(d.seekOffset ?? MEDIA_SKIP_S),
+      seekto: (d) => {
+        if (d.seekTime !== undefined) this.seek(d.seekTime);
+      },
+    };
+    for (const action of MEDIA_ACTIONS) {
+      try {
+        session.setActionHandler(action, handlers[action]);
+      } catch {
+        // this browser doesn't know the action
+      }
+    }
+    this.syncMediaSession();
+  }
+
+  private syncMediaSession() {
+    const session = mediaSession();
+    const video = this.videoEl;
+    if (!session || mediaSessionOwner !== this.mediaToken || !video) return;
+    session.playbackState = video.paused ? "paused" : "playing";
+    const { duration } = video;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    try {
+      session.setPositionState?.({
+        duration,
+        playbackRate: video.playbackRate || 1,
+        position: clamp(video.currentTime, 0, duration),
+      });
+    } catch {
+      // a position the browser won't take; the lock screen just lacks it
+    }
+  }
+
+  private releaseMediaSession() {
+    const session = mediaSession();
+    if (!session || mediaSessionOwner !== this.mediaToken) return;
+    mediaSessionOwner = null;
+    session.metadata = null;
+    session.playbackState = "none";
+    for (const action of MEDIA_ACTIONS) {
+      try {
+        session.setActionHandler(action, null);
+      } catch {
+        // never set
+      }
+    }
   }
 
   // ── actions ────────────────────────────────────────────────────────────
@@ -857,12 +959,13 @@ class Player implements SeamPlayerInstance {
     } else void video.requestPictureInPicture().catch(() => undefined);
   };
 
+  // load again from scratch, back at the moment it stopped, and play
   private readonly retry = () => {
-    this.set({ failed: false });
-    const hls = this.hls;
-    if (hls) hls.startLoad();
-    else this.videoEl?.load();
-    void this.videoEl?.play().catch(() => undefined);
+    const at = this.videoEl?.currentTime || this.s.time;
+    this.startAt = at > 0 ? at : null;
+    this.wantsPlay = true;
+    this.set({ failed: false, waiting: false });
+    this.attach();
   };
 
   private readonly replay = () => {
@@ -934,6 +1037,7 @@ class Player implements SeamPlayerInstance {
     this.setPlaying(true);
     this.set({ ended: false });
     this.showControls();
+    this.claimMediaSession();
     this.o.onPlay?.();
   };
 
@@ -941,6 +1045,7 @@ class Player implements SeamPlayerInstance {
     const video = this.videoEl!;
     this.setPlaying(false);
     this.savePosition(video.currentTime, video.duration);
+    this.syncMediaSession();
     this.o.onPause?.();
   };
 
@@ -948,6 +1053,7 @@ class Player implements SeamPlayerInstance {
     this.setPlaying(false);
     this.set({ ended: true });
     this.savePosition(0, 0);
+    this.syncMediaSession();
     this.o.onEnded?.();
   };
 
@@ -964,6 +1070,7 @@ class Player implements SeamPlayerInstance {
   private readonly onSeeked = () => {
     const video = this.videoEl!;
     this.set({ time: video.currentTime });
+    this.syncMediaSession();
     if (!this.playAfterSeek) return;
     this.playAfterSeek = false;
     void video.play().catch(() => this.setPlaying(false));
@@ -1108,8 +1215,16 @@ class Player implements SeamPlayerInstance {
       this.showFlash({ icon: wasMuted ? "volumeHigh" : "volumeMute" });
     } else if (key === "f" || key === "F") this.toggleFullscreen();
     else if (key === "c" || key === "C") this.toggleCaptions();
-    else if (/^[0-9]$/.test(key)) this.seek((s.duration * Number(key)) / 10);
-    else if (key === ">") this.changeRate(1);
+    else if (/^[0-9]$/.test(key) || key === "Home" || key === "End") {
+      const to =
+        key === "Home"
+          ? 0
+          : key === "End"
+            ? s.duration
+            : (s.duration * Number(key)) / 10;
+      this.seek(to);
+      if (s.activated) this.showFlash({ text: formatTime(to) });
+    } else if (key === ">") this.changeRate(1);
     else if (key === "<") this.changeRate(-1);
     else if ((key === "," || key === ".") && video?.paused) {
       this.seek(
@@ -1155,9 +1270,11 @@ class Player implements SeamPlayerInstance {
           // captions from another host need CORS; plain playback doesn't
           crossOrigin={captions.length ? "anonymous" : undefined}
           onLoadedMetadata={this.onLoadedMetadata}
-          onDurationChange={() =>
-            this.set({ duration: this.videoEl!.duration })
-          }
+          onDurationChange={() => {
+            this.set({ duration: this.videoEl!.duration });
+            this.syncMediaSession();
+          }}
+          onRateChange={() => this.syncMediaSession()}
           onPlay={this.onVideoPlay}
           onPause={this.onVideoPause}
           onEnded={this.onVideoEnded}

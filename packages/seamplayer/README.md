@@ -6,7 +6,7 @@ A video player for React, Astro, Svelte, Vue and plain JavaScript that loads lik
 - **A filmstrip seek bar.** Give it a sprite sheet of frames and the bar opens into the video's real frames as the pointer comes near, with the frame under the pointer magnified.
 - **Chapters, quality, captions, speed and loop** in one settings menu, where every row shows what it's set to.
 - **Download** in one or several sizes, and **Copy link at 0:12**.
-- **Keyboard and touch.** YouTube's keys (Space, J/K/L, arrows, 0–9, F, M, C, `<` `>`, `,` `.`, `?`). On phones, tap shows the controls, double-tap a side skips 10s, and holding plays at 2×.
+- **Keyboard and touch.** YouTube's keys (Space, J/K/L, arrows, 0–9, Home/End, F, M, C, `<` `>`, `,` `.`, `?`), plus media keys and lock-screen controls. On phones, tap shows the controls, double-tap a side skips 10s, and holding plays at 2×.
 - **It remembers** volume, speed, captions and where each viewer stopped.
 
 ## Install

@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## Unreleased (seamplayer 0.2.0, seamtranscode 0.1.0)
 
+- Seamplayer shows the playing video on the lock screen and in the system's media controls, and answers media keys and headset buttons (Media Session API).
+- "Try again" after a playback error reloads the video and picks up where it stopped, instead of starting over.
+- Home and End jump to the start and end; number keys, Home and End flash the time they jumped to.
+- The resume point is saved the moment the tab is hidden, so closing a tab keeps the exact second.
 - Add a framework-free seamplayer core and `<seam-player>` custom element for Astro, Svelte, Vue and plain JavaScript. Preserve the React 18/19 API through a thin adapter.
 - Add framework examples and an Expo DOM bridge example for React Native.
 - Add seamtranscode: aligned adaptive HLS, posters, scrub sheets, storage adapters, CLI, signed-webhook HTTP worker and distributed compute steps.

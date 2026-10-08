@@ -30,6 +30,7 @@ const keyboard: [string[], ReactNode][] = [
   [["F"], "Fullscreen"],
   [["C"], "Captions on or off"],
   [["0", "–", "9"], "Jump to 0% through 90% of the video"],
+  [["Home", "End"], "Jump to the start or the end"],
   [["<", ">"], "Slower or faster"],
   [[",", "."], "Back or forward one frame, while paused"],
   [["?"], "Show every shortcut"],
@@ -73,6 +74,13 @@ export default function KeyboardAndTouchPage() {
       </Section>
       <Section id="mouse-and-touch" title="Mouse and touch">
         <Definitions items={pointer} />
+      </Section>
+      <Section id="media-keys" title="Media keys and the lock screen">
+        <P>
+          The playing player shows its title and poster on the lock screen and
+          in the system’s media controls. Play, pause, skip and seeking from
+          there, a headset or the keyboard’s media keys all reach it.
+        </P>
       </Section>
     </DocsPage>
   );

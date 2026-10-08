@@ -14,6 +14,7 @@ Object.assign(globalThis, {
   localStorage: window.localStorage,
   ResizeObserver: window.ResizeObserver,
   Event: window.Event,
+  KeyboardEvent: window.KeyboardEvent,
   PointerEvent: window.PointerEvent,
   HTMLElement: window.HTMLElement,
   customElements: window.customElements,
@@ -174,6 +175,85 @@ describe("player lifecycle", () => {
     );
     expect(video.playbackRate).toBe(1);
     expect(container.querySelector(".sp-fast")).toBeNull();
+  });
+
+  test("Try again reloads and resumes from the moment it failed", async () => {
+    await render({ src: "/film.mp4", autoPlay: true });
+    const video = container.querySelector("video")!;
+    await act(() => metadata(video));
+    video.currentTime = 42;
+    await act(() => video.dispatchEvent(new Event("error")));
+    const retry = Array.from(container.querySelectorAll("button")).find(
+      (b) => b.textContent === "Try again"
+    )!;
+    play.mockClear();
+    await act(() => retry.click());
+    expect(container.textContent).not.toContain("Try again");
+    video.currentTime = 0;
+    await act(() => metadata(video));
+    expect(video.currentTime).toBe(42);
+    await act(() => video.dispatchEvent(new Event("seeked")));
+    expect(play).toHaveBeenCalled();
+  });
+
+  test("Home and End jump to the start and end", async () => {
+    await render({ src: "/film.mp4", autoPlay: true });
+    const video = container.querySelector("video")!;
+    await act(() => metadata(video));
+    const player = container.querySelector<HTMLElement>(".sp")!;
+    await act(() =>
+      player.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "End", bubbles: true })
+      )
+    );
+    expect(video.currentTime).toBe(120);
+    await act(() =>
+      player.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Home", bubbles: true })
+      )
+    );
+    expect(video.currentTime).toBe(0);
+    expect(container.querySelector(".sp-flash")?.textContent).toBe("0:00");
+  });
+
+  test("media keys and the lock screen control the playing player", async () => {
+    const handlers = new Map<string, MediaSessionActionHandler | null>();
+    const session = {
+      metadata: null as unknown,
+      playbackState: "none",
+      setActionHandler: (
+        action: string,
+        handler: MediaSessionActionHandler | null
+      ) => handlers.set(action, handler),
+      setPositionState: mock(() => {}),
+    };
+    Object.defineProperty(window.navigator, "mediaSession", {
+      configurable: true,
+      value: session,
+    });
+    try {
+      await render({ src: "/film.mp4", title: "Film", autoPlay: true });
+      const video = container.querySelector("video")!;
+      await act(() => metadata(video));
+      Object.defineProperty(video, "paused", {
+        configurable: true,
+        value: false,
+      });
+      await act(() => video.dispatchEvent(new Event("play")));
+      expect(session.playbackState).toBe("playing");
+      expect(session.setPositionState).toHaveBeenCalled();
+      await act(() =>
+        handlers.get("seekto")?.({ action: "seekto", seekTime: 30 })
+      );
+      expect(video.currentTime).toBe(30);
+      await act(() => handlers.get("seekforward")?.({ action: "seekforward" }));
+      expect(video.currentTime).toBe(40);
+      await act(() => root.render(null));
+      expect(handlers.get("play")).toBeNull();
+      expect(session.playbackState).toBe("none");
+    } finally {
+      Reflect.deleteProperty(window.navigator, "mediaSession");
+    }
   });
 
   test("an HLS initialization exception reaches the recovery UI", async () => {

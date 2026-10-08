@@ -155,6 +155,7 @@ const SHORTCUTS: [string, string][] = [
   ["F", "Fullscreen"],
   ["C", "Captions"],
   ["0–9", "Jump to 0–90%"],
+  ["Home End", "Start or end"],
   ["< >", "Slower or faster"],
   [", .", "One frame, while paused"],
 ];
