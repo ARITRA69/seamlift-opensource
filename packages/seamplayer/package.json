@@ -1,7 +1,7 @@
 {
   "name": "seamplayer",
   "version": "0.1.2",
-  "description": "A video player for React: loads like an image, a filmstrip seek bar, chapters, quality, captions, downloads, links to a moment, and the shortcuts and gestures people already know.",
+  "description": "A poster-first video player for React, Astro, Svelte, Vue and plain JavaScript, with a filmstrip timeline, chapters, captions and quality controls.",
   "keywords": [
     "react",
     "video",
@@ -9,14 +9,21 @@
     "player",
     "hls",
     "chapters",
-    "captions"
+    "captions",
+    "astro",
+    "svelte",
+    "vue",
+    "web-component",
+    "expo"
   ],
   "homepage": "https://opensource.seamlift.com/seamplayer",
   "license": "MIT",
   "author": "Seamlift",
   "type": "module",
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/element.js",
+    "./dist/element.cjs"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -33,7 +40,37 @@
       }
     },
     "./styles.css": "./dist/styles.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.cts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.js"
+      },
+      "require": {
+        "types": "./dist/core.d.cts",
+        "default": "./dist/core.cjs"
+      }
+    },
+    "./element": {
+      "import": {
+        "types": "./dist/element.d.ts",
+        "default": "./dist/element.js"
+      },
+      "require": {
+        "types": "./dist/element.d.cts",
+        "default": "./dist/element.cjs"
+      }
+    }
   },
   "files": [
     "dist",
@@ -92,5 +129,13 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   }
 }

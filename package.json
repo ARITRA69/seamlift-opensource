@@ -11,17 +11,19 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "bun run build:player && bun run --parallel --filter seamplayer --filter @seamlift-opensource/site dev",
+    "dev": "bun run build:packages && bun run --parallel --filter \"./packages/*\" --filter @seamlift-opensource/site dev",
     "build:player": "bun run --filter seamplayer build",
-    "build": "bun run build:player && bun run --filter @seamlift-opensource/site build",
-    "lint": "bun run --filter seamplayer --filter @seamlift-opensource/site lint",
-    "check-types": "bun run build:player && bun run --filter seamplayer --filter @seamlift-opensource/site check-types",
+    "build": "bun run build:packages && bun run --filter @seamlift-opensource/site build",
+    "lint": "bun run --filter \"./packages/*\" --filter @seamlift-opensource/site lint",
+    "check-types": "bun run build:packages && bun run --filter \"./packages/*\" --filter @seamlift-opensource/site check-types",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "bun run --filter seamplayer --filter @seamlift-opensource/site test",
-    "check": "bun run format:check && bun run lint && bun run build && bun run --filter seamplayer --filter @seamlift-opensource/site check-types && bun run test",
-    "verify:package": "bun run --filter seamplayer verify:package",
-    "publish:player": "bun run --filter seamplayer release"
+    "test": "bun run --filter \"./packages/*\" --filter @seamlift-opensource/site test",
+    "check": "bun run format:check && bun run lint && bun run build && bun run --filter \"./packages/*\" --filter @seamlift-opensource/site check-types && bun run test",
+    "verify:package": "bun run --filter \"./packages/*\" verify:package",
+    "publish:player": "bun run --filter seamplayer release",
+    "build:packages": "bun run --filter \"./packages/*\" build",
+    "publish:transcode": "bun run --filter seamtranscode release"
   },
   "devDependencies": {
     "prettier": "^3.7.4"

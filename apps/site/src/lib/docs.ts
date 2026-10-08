@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+export const siteUrl = "https://opensource.seamlift.com";
+
 export type DocsPage = {
   title: string;
   href: string;
@@ -21,7 +23,7 @@ export type DocsProject = {
 
 export const seamplayer: DocsProject = {
   name: "seamplayer",
-  summary: "A video player for React",
+  summary: "A video player for every web framework",
   description:
     "Poster-first playback, a filmstrip timeline, chapters, captions, quality switching, downloads, and the shortcuts people already know.",
   href: "/seamplayer",
@@ -42,7 +44,7 @@ export const seamplayer: DocsProject = {
           title: "Introduction",
           href: "/seamplayer",
           description:
-            "A video player for React that loads like an image and plays like the players people already know.",
+            "A video player for React, Astro, Svelte and plain JavaScript that loads like an image and plays like the players people already know.",
         },
         {
           title: "Installation",
@@ -67,6 +69,12 @@ export const seamplayer: DocsProject = {
     {
       title: "Guides",
       pages: [
+        {
+          title: "Other frameworks",
+          href: "/seamplayer/frameworks",
+          description:
+            "Astro, Svelte, Vue, plain JavaScript and Expo DOM components, powered by one framework-free player.",
+        },
         {
           title: "Sources and quality",
           href: "/seamplayer/sources",
@@ -122,7 +130,65 @@ export const seamplayer: DocsProject = {
   ],
 };
 
-export const projects = [seamplayer];
+export const seamtranscode: DocsProject = {
+  name: "seamtranscode",
+  summary: "Video uploads to adaptive HLS",
+  description:
+    "Aligned renditions, posters, filmstrip previews, storage adapters, a CLI and a signed-webhook worker.",
+  href: "/seamtranscode",
+  github:
+    "https://github.com/ARITRA69/seamlift-opensource/tree/main/packages/seamtranscode",
+  npm: "https://www.npmjs.com/package/seamtranscode",
+  links: [
+    {
+      title: "Docs",
+      href: "/seamtranscode",
+    },
+    {
+      title: "Compute",
+      href: "/seamtranscode/compute",
+    },
+  ],
+  sections: [
+    {
+      title: "Getting started",
+      pages: [
+        {
+          title: "Introduction",
+          href: "/seamtranscode",
+          description:
+            "From a video upload to adaptive HLS, a poster and a scrub sheet.",
+        },
+        {
+          title: "Installation and CLI",
+          href: "/seamtranscode/installation",
+          description:
+            "Install the package and ffmpeg, encode your first file, and preview the result.",
+        },
+        {
+          title: "Storage and player",
+          href: "/seamtranscode/storage",
+          description:
+            "Local files, S3 and R2, with output ready for seamplayer.",
+        },
+        {
+          title: "Compute",
+          href: "/seamtranscode/compute",
+          description:
+            "Run locally, in Docker or across workers with a serializable transcode plan.",
+        },
+        {
+          title: "HTTP worker and webhooks",
+          href: "/seamtranscode/server",
+          description:
+            "Queue jobs, poll results, cancel work and verify signed callbacks.",
+        },
+      ],
+    },
+  ],
+};
+
+export const projects = [seamplayer, seamtranscode];
 
 export function findDocsPage(project: DocsProject, href: string) {
   const pages = project.sections.flatMap((section) => section.pages);

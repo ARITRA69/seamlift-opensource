@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add a framework-free seamplayer core and `<seam-player>` custom element for Astro, Svelte, Vue and plain JavaScript. Preserve the React 18/19 API through a thin adapter.
+- Add framework examples and an Expo DOM bridge example for React Native.
+- Add seamtranscode: aligned adaptive HLS, posters, scrub sheets, storage adapters, CLI, signed-webhook HTTP worker and distributed compute steps.
+- Add both projects to the site, sitemap and LLM documentation.
+
 ## 0.1.2
 
 - Move the repository to `ARITRA69/seamlift-opensource`, home of Seamlift's open-source projects. Seamplayer's docs now live at https://opensource.seamlift.com/seamplayer.

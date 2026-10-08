@@ -1,0 +1,11 @@
+---
+import { renderPoster } from "seamplayer/core";
+import "seamplayer/styles.css";
+const options = { src: "/film.mp4", poster: "/poster.jpg", title: "Film" };
+---
+<seam-player class="sp" src={options.src} poster={options.poster} title={options.title}>
+  <Fragment set:html={renderPoster(options)} />
+</seam-player>
+<script>
+  import "seamplayer/element";
+</script>

@@ -1,3 +1,4 @@
+/** @jsxImportSource react */
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { Window } from "happy-dom";
 import { act, createElement, createRef } from "react";
@@ -14,6 +15,9 @@ Object.assign(globalThis, {
   ResizeObserver: window.ResizeObserver,
   Event: window.Event,
   PointerEvent: window.PointerEvent,
+  HTMLElement: window.HTMLElement,
+  customElements: window.customElements,
+  CustomEvent: window.CustomEvent,
   requestAnimationFrame: window.requestAnimationFrame.bind(window),
   cancelAnimationFrame: window.cancelAnimationFrame.bind(window),
   IS_REACT_ACT_ENVIRONMENT: true,
@@ -186,5 +190,104 @@ describe("player lifecycle", () => {
     });
     expect(onError).toHaveBeenCalledWith(null);
     expect(container.textContent).toContain("Try again");
+  });
+});
+
+describe("framework adapters", () => {
+  test("React updates callbacks and options without replacing a playing video", async () => {
+    await render({ src: "/one.mp4", autoPlay: true, theme: { accent: "red" } });
+    const video = container.querySelector("video")!;
+    const onPlay = mock(() => {});
+    await render({
+      src: "/two.mp4",
+      autoPlay: true,
+      loop: true,
+      onPlay,
+      theme: { accent: "blue" },
+    });
+    expect(container.querySelector("video")).toBe(video);
+    expect(video.getAttribute("src")).toBe("/two.mp4");
+    expect(video.loop).toBe(true);
+    expect(
+      container
+        .querySelector<HTMLElement>(".sp")!
+        .style.getPropertyValue("--sp-accent")
+    ).toBe("blue");
+    await act(() => video.dispatchEvent(new Event("play")));
+    expect(onPlay).toHaveBeenCalledTimes(1);
+  });
+
+  test("vanilla player updates, seeks, preserves DOM, and destroys media", async () => {
+    const { createSeamPlayer } = await import("../src/core");
+    const onPause = mock(() => {});
+    const instance = createSeamPlayer(container, {
+      src: "/film.mp4",
+      autoPlay: true,
+      onPause,
+    });
+    const video = instance.video!;
+    metadata(video);
+    instance.seek(40);
+    await Promise.resolve();
+    expect(video.currentTime).toBe(40);
+    instance.update({ src: "/film.mp4", autoPlay: true, title: "Updated" });
+    expect(instance.video).toBe(video);
+    expect(container.getAttribute("aria-label")).toBe("Updated, video player");
+    instance.destroy();
+    instance.destroy();
+    expect(container.children.length).toBe(0);
+    expect(video.getAttribute("src")).toBeNull();
+    expect(instance.video).toBeNull();
+    video.dispatchEvent(new Event("pause"));
+    expect(onPause).not.toHaveBeenCalled();
+  });
+
+  test("custom element accepts attributes and rich properties, emits events, and reconnects", async () => {
+    const { defineSeamPlayer } = await import("../src/element");
+    defineSeamPlayer();
+    const element = document.createElement("seam-player");
+    element.setAttribute("src", "/film.mp4");
+    element.setAttribute("title", "Element film");
+    element.chapters = [{ start: 0, title: "Intro" }];
+    element.theme = { accent: "green" };
+    container.append(element);
+    expect(element.querySelector("video")).toBeNull();
+    expect(
+      element.querySelector('[aria-label="Play Element film"]')
+    ).not.toBeNull();
+    expect(element.style.getPropertyValue("--sp-accent")).toBe("green");
+    element.play();
+    const video = element.video!;
+    const updates: number[] = [];
+    element.addEventListener("timeupdate", (event) =>
+      updates.push((event as CustomEvent<number>).detail)
+    );
+    video.currentTime = 12;
+    video.dispatchEvent(new Event("timeupdate"));
+    expect(updates).toEqual([12]);
+    element.setAttribute("src", "/next.mp4");
+    expect(element.video).toBe(video);
+    expect(video.getAttribute("src")).toBe("/next.mp4");
+    element.remove();
+    await Promise.resolve();
+    expect(element.video).toBeNull();
+    container.append(element);
+    expect(element.querySelector("video")).toBeNull();
+    element.remove();
+    await Promise.resolve();
+  });
+
+  test("custom element options accepts source arrays", async () => {
+    const { SeamPlayerElement } = await import("../src/element");
+    const element = new SeamPlayerElement();
+    element.options = {
+      src: [{ src: "/small.mp4", height: 360 }],
+      title: "Rich data",
+      autoPlay: true,
+    };
+    container.append(element);
+    expect(element.video?.getAttribute("src")).toBe("/small.mp4");
+    element.remove();
+    await Promise.resolve();
   });
 });

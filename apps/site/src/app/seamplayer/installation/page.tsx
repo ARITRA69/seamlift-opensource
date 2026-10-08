@@ -46,8 +46,10 @@ export default function InstallationPage() {
           npm install seamplayer
         </CodeBlock>
         <P>
-          Seamplayer needs React 18 or 19 as a peer dependency. hls.js ships
-          with the package and loads only when an HLS source starts playing.
+          The React entry needs React 18 or 19. Astro, Svelte and plain
+          JavaScript can use the framework-free entries. <Code>hls.js</Code>{" "}
+          ships with the package and loads only when an HLS source starts
+          playing.
         </P>
       </Section>
       <Section id="usage" title="Add a player">
@@ -78,7 +80,10 @@ export default function InstallationPage() {
       </Section>
       <Section id="requirements" title="Requirements">
         <List>
-          <li>React 18 or 19, as ESM or CommonJS.</li>
+          <li>
+            React 18 or 19 for the React adapter; other web frameworks use the
+            custom element or core API. Both ESM and CommonJS are supported.
+          </li>
           <li>
             A source the browser can play: MP4, WebM, or an HLS playlist (
             <Code>.m3u8</Code>).

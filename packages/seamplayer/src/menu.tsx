@@ -1,12 +1,6 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
 import { Icon, type IconName } from "./icons";
 import { Toggle } from "./controls";
+import type { Child } from "./jsx/dom";
 import type { SeamChapter } from "./types";
 import { formatTime } from "./utils";
 
@@ -28,12 +22,12 @@ const MenuRow = ({
   onClick,
 }: {
   icon: IconName;
-  label: ReactNode;
+  label: Child;
   value?: string;
   /** values that are metadata (sizes, times) */
   mono?: boolean;
   /** replaces the chevron; pass null for an action with nothing after */
-  trailing?: ReactNode;
+  trailing?: Child;
   onClick: () => void;
 }) => (
   <button type="button" role="menuitem" className="sp-row" onClick={onClick}>
@@ -64,7 +58,7 @@ const OptionRow = ({
 }: {
   selected: boolean;
   onClick: () => void;
-  children: ReactNode;
+  children: Child;
 }) => (
   <button
     type="button"
@@ -99,36 +93,7 @@ const CAPTION_SIZES: { value: CaptionSize; label: string }[] = [
   { value: "lg", label: "Large" },
 ];
 
-/**
- * The player's settings as a menu: each row says what it's set to and opens
- * its own page, with a way back. Actions (download, copy link) sit under a
- * hairline, shortcuts in a quiet footer.
- */
-export const SettingsMenu = ({
-  initialPage = "main",
-  time,
-  chapters,
-  currentChapter,
-  onChapter,
-  rate,
-  onRate,
-  captions,
-  caption,
-  onCaption,
-  captionSize,
-  onCaptionSize,
-  qualities,
-  quality,
-  playingHeight,
-  onQuality,
-  loop,
-  onLoop,
-  downloads,
-  onDownload,
-  onCopyLink,
-  onShortcuts,
-}: {
-  initialPage?: "main" | "chapters";
+export type SettingsMenuProps = {
   time: number;
   chapters: SeamChapter[];
   currentChapter: SeamChapter | null;
@@ -154,268 +119,330 @@ export const SettingsMenu = ({
   onDownload?: (index?: number) => void;
   onCopyLink?: () => Promise<void>;
   onShortcuts: () => void;
-}) => {
-  const [page, setPage] = useState<Page>(initialPage);
-  const [back, setBack] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const pageRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState<number>();
+};
+
+type MenuState = {
+  page: Page;
+  back: boolean;
+  copied: boolean;
+  height: number | undefined;
+};
+
+/**
+ * The player's settings as a menu: each row says what it's set to and opens
+ * its own page, with a way back. Actions (download, copy link) sit under a
+ * hairline, shortcuts in a quiet footer. One instance per opening.
+ */
+export class SettingsMenu {
+  private state: MenuState;
+  private observer: ResizeObserver | null = null;
+  private copiedTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor(
+    initialPage: "main" | "chapters",
+    private readonly invalidate: () => void
+  ) {
+    this.state = {
+      page: initialPage,
+      back: false,
+      copied: false,
+      height: undefined,
+    };
+  }
+
+  private set(next: Partial<MenuState>) {
+    Object.assign(this.state, next);
+    this.invalidate();
+  }
 
   // the panel's height follows the page, so moving between pages resizes it
-  useEffect(() => {
-    const el = pageRef.current;
+  private readonly pageRef = (el: HTMLDivElement | null) => {
     if (!el) return;
-    const observer = new ResizeObserver(() => setHeight(el.offsetHeight));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [page]);
-
-  const go = (next: Page) => {
-    setBack(next === "main");
-    setPage(next);
+    this.observer?.disconnect();
+    this.observer = new ResizeObserver(() =>
+      this.set({ height: el.offsetHeight })
+    );
+    this.observer.observe(el);
   };
 
-  const copy = async () => {
-    if (!onCopyLink) return;
+  dispose() {
+    this.observer?.disconnect();
+    this.observer = null;
+    if (this.copiedTimer) clearTimeout(this.copiedTimer);
+  }
+
+  private go(next: Page) {
+    this.set({ back: next === "main", page: next });
+  }
+
+  private async copy(onCopyLink: () => Promise<void>) {
     try {
       await onCopyLink();
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
+      this.set({ copied: true });
+      if (this.copiedTimer) clearTimeout(this.copiedTimer);
+      this.copiedTimer = setTimeout(() => this.set({ copied: false }), 1600);
     } catch {
       // nothing copied; the row stays as it was
     }
-  };
+  }
 
-  const captionLabel =
-    captions.find((c) => c.value === caption)?.label ?? "Off";
-  const qualityLabel =
-    quality === -1
-      ? playingHeight
-        ? `Auto · ${playingHeight}p`
-        : "Auto"
-      : `${quality}p`;
-  const sizeIndex = CAPTION_SIZES.findIndex((s) => s.value === captionSize);
+  view({
+    time,
+    chapters,
+    currentChapter,
+    onChapter,
+    rate,
+    onRate,
+    captions,
+    caption,
+    onCaption,
+    captionSize,
+    onCaptionSize,
+    qualities,
+    quality,
+    playingHeight,
+    onQuality,
+    loop,
+    onLoop,
+    downloads,
+    onDownload,
+    onCopyLink,
+    onShortcuts,
+  }: SettingsMenuProps) {
+    const { page, back, copied, height } = this.state;
+    const go = (next: Page) => this.go(next);
 
-  return (
-    <div
-      className="sp-menu"
-      role="menu"
-      aria-label="Settings"
-      style={height === undefined ? undefined : { height: height + 8 }}
-    >
+    const captionLabel =
+      captions.find((c) => c.value === caption)?.label ?? "Off";
+    const qualityLabel =
+      quality === -1
+        ? playingHeight
+          ? `Auto · ${playingHeight}p`
+          : "Auto"
+        : `${quality}p`;
+    const sizeIndex = CAPTION_SIZES.findIndex((s) => s.value === captionSize);
+
+    return (
       <div
-        ref={pageRef}
-        key={page}
-        className="sp-page"
-        data-back={back || undefined}
+        className="sp-menu"
+        role="menu"
+        aria-label="Settings"
+        style={height === undefined ? undefined : { height: height + 8 }}
       >
-        {page === "main" && (
-          <>
-            {chapters.length > 0 && (
-              <MenuRow
-                icon="chapters"
-                label="Chapters"
-                value={currentChapter?.title}
-                onClick={() => go("chapters")}
-              />
-            )}
-            <MenuRow
-              icon="speed"
-              label="Speed"
-              value={speedLabel(rate)}
-              onClick={() => go("speed")}
-            />
-            {qualities.length > 1 && (
-              <MenuRow
-                icon="quality"
-                label="Quality"
-                value={qualityLabel}
-                onClick={() => go("quality")}
-              />
-            )}
-            {captions.length > 0 && (
-              <MenuRow
-                icon="captions"
-                label="Captions"
-                value={captionLabel}
-                onClick={() => go("captions")}
-              />
-            )}
-            <MenuRow
-              icon="loop"
-              label="Loop"
-              trailing={<Toggle on={loop} />}
-              onClick={() => onLoop(!loop)}
-            />
-
-            {(onDownload || onCopyLink) && <div className="sp-divider" />}
-            {onDownload &&
-              (downloads.length > 1 ? (
+        <div
+          ref={this.pageRef}
+          key={page}
+          className="sp-page"
+          data-back={back || undefined}
+        >
+          {page === "main" && (
+            <>
+              {chapters.length > 0 && (
                 <MenuRow
-                  icon="download"
-                  label="Download"
-                  value={`${downloads.length} sizes`}
-                  onClick={() => go("download")}
+                  icon="chapters"
+                  label="Chapters"
+                  value={currentChapter?.title}
+                  onClick={() => go("chapters")}
                 />
-              ) : (
+              )}
+              <MenuRow
+                icon="speed"
+                label="Speed"
+                value={speedLabel(rate)}
+                onClick={() => go("speed")}
+              />
+              {qualities.length > 1 && (
                 <MenuRow
+                  icon="quality"
+                  label="Quality"
+                  value={qualityLabel}
+                  onClick={() => go("quality")}
+                />
+              )}
+              {captions.length > 0 && (
+                <MenuRow
+                  icon="captions"
+                  label="Captions"
+                  value={captionLabel}
+                  onClick={() => go("captions")}
+                />
+              )}
+              <MenuRow
+                icon="loop"
+                label="Loop"
+                trailing={<Toggle on={loop} />}
+                onClick={() => onLoop(!loop)}
+              />
+
+              {(onDownload || onCopyLink) && <div className="sp-divider" />}
+              {onDownload &&
+                (downloads.length > 1 ? (
+                  <MenuRow
+                    icon="download"
+                    label="Download"
+                    value={`${downloads.length} sizes`}
+                    onClick={() => go("download")}
+                  />
+                ) : (
+                  <MenuRow
+                    icon="download"
+                    label="Download"
+                    value={downloads[0]?.detail}
+                    mono
+                    trailing={null}
+                    onClick={() => onDownload(0)}
+                  />
+                ))}
+              {onCopyLink && (
+                <MenuRow
+                  icon={copied ? "check" : "link"}
+                  label={
+                    <span key={copied ? "copied" : "copy"} className="sp-roll">
+                      {copied ? (
+                        "Link copied"
+                      ) : (
+                        <>
+                          Copy link at{" "}
+                          <span className="sp-mono">{formatTime(time)}</span>
+                        </>
+                      )}
+                    </span>
+                  }
+                  trailing={null}
+                  onClick={() => void this.copy(onCopyLink)}
+                />
+              )}
+
+              <button type="button" className="sp-footer" onClick={onShortcuts}>
+                <span>
+                  <Icon name="keyboard" size={14} />
+                  Keyboard shortcuts
+                </span>
+                <kbd className="sp-kbd">?</kbd>
+              </button>
+            </>
+          )}
+
+          {page === "chapters" && (
+            <>
+              <PageHeader title="Chapters" onBack={() => go("main")} />
+              {chapters.map((c) => (
+                <OptionRow
+                  key={c.start}
+                  selected={c === currentChapter}
+                  onClick={() => onChapter(c)}
+                >
+                  <span className="sp-option-time">{formatTime(c.start)}</span>
+                  <span className="sp-truncate">{c.title}</span>
+                </OptionRow>
+              ))}
+            </>
+          )}
+
+          {page === "speed" && (
+            <>
+              <PageHeader title="Speed" onBack={() => go("main")} />
+              {SPEEDS.map((s) => (
+                <OptionRow
+                  key={s}
+                  selected={s === rate}
+                  onClick={() => {
+                    onRate(s);
+                    go("main");
+                  }}
+                >
+                  {speedLabel(s)}
+                </OptionRow>
+              ))}
+            </>
+          )}
+
+          {page === "quality" && (
+            <>
+              <PageHeader title="Quality" onBack={() => go("main")} />
+              <OptionRow
+                selected={quality === -1}
+                onClick={() => {
+                  onQuality(-1);
+                  go("main");
+                }}
+              >
+                Auto
+                {playingHeight && (
+                  <span className="sp-option-note">{playingHeight}p now</span>
+                )}
+              </OptionRow>
+              {qualities.map((h) => (
+                <OptionRow
+                  key={h}
+                  selected={quality === h}
+                  onClick={() => {
+                    onQuality(h);
+                    go("main");
+                  }}
+                >
+                  {h}p
+                </OptionRow>
+              ))}
+            </>
+          )}
+
+          {page === "captions" && (
+            <>
+              <PageHeader title="Captions" onBack={() => go("main")} />
+              {[{ value: "off", label: "Off" }, ...captions].map((c) => (
+                <OptionRow
+                  key={c.value}
+                  selected={c.value === caption}
+                  onClick={() => onCaption(c.value)}
+                >
+                  {c.label}
+                </OptionRow>
+              ))}
+              <div className="sp-divider" />
+              <div className="sp-size">
+                <span className="sp-size-title">Text size</span>
+                <div
+                  role="radiogroup"
+                  aria-label="Caption text size"
+                  className="sp-seg"
+                  style={{ "--sp-i": sizeIndex }}
+                >
+                  <span className="sp-seg-thumb" />
+                  {CAPTION_SIZES.map((size) => (
+                    <button
+                      key={size.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={size.value === captionSize}
+                      onClick={() => onCaptionSize(size.value)}
+                    >
+                      {size.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {page === "download" && onDownload && (
+            <>
+              <PageHeader title="Download" onBack={() => go("main")} />
+              {downloads.map((d, i) => (
+                <MenuRow
+                  key={d.label}
                   icon="download"
-                  label="Download"
-                  value={downloads[0]?.detail}
+                  label={d.label}
+                  value={d.detail}
                   mono
                   trailing={null}
-                  onClick={() => onDownload(0)}
+                  onClick={() => onDownload(i)}
                 />
               ))}
-            {onCopyLink && (
-              <MenuRow
-                icon={copied ? "check" : "link"}
-                label={
-                  <span key={copied ? "copied" : "copy"} className="sp-roll">
-                    {copied ? (
-                      "Link copied"
-                    ) : (
-                      <>
-                        Copy link at{" "}
-                        <span className="sp-mono">{formatTime(time)}</span>
-                      </>
-                    )}
-                  </span>
-                }
-                trailing={null}
-                onClick={() => void copy()}
-              />
-            )}
-
-            <button type="button" className="sp-footer" onClick={onShortcuts}>
-              <span>
-                <Icon name="keyboard" size={14} />
-                Keyboard shortcuts
-              </span>
-              <kbd className="sp-kbd">?</kbd>
-            </button>
-          </>
-        )}
-
-        {page === "chapters" && (
-          <>
-            <PageHeader title="Chapters" onBack={() => go("main")} />
-            {chapters.map((c) => (
-              <OptionRow
-                key={c.start}
-                selected={c === currentChapter}
-                onClick={() => onChapter(c)}
-              >
-                <span className="sp-option-time">{formatTime(c.start)}</span>
-                <span className="sp-truncate">{c.title}</span>
-              </OptionRow>
-            ))}
-          </>
-        )}
-
-        {page === "speed" && (
-          <>
-            <PageHeader title="Speed" onBack={() => go("main")} />
-            {SPEEDS.map((s) => (
-              <OptionRow
-                key={s}
-                selected={s === rate}
-                onClick={() => {
-                  onRate(s);
-                  go("main");
-                }}
-              >
-                {speedLabel(s)}
-              </OptionRow>
-            ))}
-          </>
-        )}
-
-        {page === "quality" && (
-          <>
-            <PageHeader title="Quality" onBack={() => go("main")} />
-            <OptionRow
-              selected={quality === -1}
-              onClick={() => {
-                onQuality(-1);
-                go("main");
-              }}
-            >
-              Auto
-              {playingHeight && (
-                <span className="sp-option-note">{playingHeight}p now</span>
-              )}
-            </OptionRow>
-            {qualities.map((h) => (
-              <OptionRow
-                key={h}
-                selected={quality === h}
-                onClick={() => {
-                  onQuality(h);
-                  go("main");
-                }}
-              >
-                {h}p
-              </OptionRow>
-            ))}
-          </>
-        )}
-
-        {page === "captions" && (
-          <>
-            <PageHeader title="Captions" onBack={() => go("main")} />
-            {[{ value: "off", label: "Off" }, ...captions].map((c) => (
-              <OptionRow
-                key={c.value}
-                selected={c.value === caption}
-                onClick={() => onCaption(c.value)}
-              >
-                {c.label}
-              </OptionRow>
-            ))}
-            <div className="sp-divider" />
-            <div className="sp-size">
-              <span className="sp-size-title">Text size</span>
-              <div
-                role="radiogroup"
-                aria-label="Caption text size"
-                className="sp-seg"
-                style={{ "--sp-i": sizeIndex } as CSSProperties}
-              >
-                <span className="sp-seg-thumb" />
-                {CAPTION_SIZES.map((size) => (
-                  <button
-                    key={size.value}
-                    type="button"
-                    role="radio"
-                    aria-checked={size.value === captionSize}
-                    onClick={() => onCaptionSize(size.value)}
-                  >
-                    {size.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {page === "download" && onDownload && (
-          <>
-            <PageHeader title="Download" onBack={() => go("main")} />
-            {downloads.map((d, i) => (
-              <MenuRow
-                key={d.label}
-                icon="download"
-                label={d.label}
-                value={d.detail}
-                mono
-                trailing={null}
-                onClick={() => onDownload(i)}
-              />
-            ))}
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}

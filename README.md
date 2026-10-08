@@ -2,16 +2,22 @@
 
 The open-source parts of [Seamlift](https://seamlift.com), in one Bun monorepo, documented at [opensource.seamlift.com](https://opensource.seamlift.com).
 
-| Project                                     | Description              | Docs                                                                             |
-| ------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------- |
-| [seamplayer](packages/seamplayer/README.md) | A video player for React | [opensource.seamlift.com/seamplayer](https://opensource.seamlift.com/seamplayer) |
+| Project                                           | Description                                                  | Docs                                                                                   |
+| ------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| [seamplayer](packages/seamplayer/README.md)       | A video player for React, Astro, Svelte and plain JavaScript | [opensource.seamlift.com/seamplayer](https://opensource.seamlift.com/seamplayer)       |
+| [seamtranscode](packages/seamtranscode/README.md) | Adaptive HLS, previews, CLI and HTTP worker                  | [opensource.seamlift.com/seamtranscode](https://opensource.seamlift.com/seamtranscode) |
 
 ```text
 apps/site/             opensource.seamlift.com: Next.js App Router website with shadcn/ui
-packages/seamplayer/   The public seamplayer npm package
+packages/seamplayer/    The public seamplayer npm package
+packages/seamtranscode/ Video encoding, previews, CLI and HTTP worker
+examples/              Astro, Svelte and Expo DOM components
+recipes/modal/         Distributed encoding with the same Node package
 ```
 
 Requires Node.js 22+ and Bun 1.4.2. There is one lockfile. The npm package remains self-contained; website dependencies are never published with it.
+
+See [seamtranscode](packages/seamtranscode/README.md) for video encoding, storage, compute, CLI and HTTP service usage.
 
 ## Develop
 
@@ -20,12 +26,12 @@ bun install --frozen-lockfile
 bun run dev
 ```
 
-The site runs at http://localhost:3001. The player builds before the site starts, then both run in watch mode. The site consumes the actual package exports through `workspace:*`.
+The site runs at http://localhost:3100. Both packages build before the site starts, then the packages and site run in watch mode. The site consumes the actual package exports through `workspace:*`.
 
 ```sh
-bun run build          # player, then production website
+bun run build          # both packages, then production website
 bun run check          # formatting, lint, both builds, types, player and example checks
-bun run verify:package # isolated React 18/19 tarball checks
+bun run verify:package # isolated player and transcoder tarball checks
 bun run format
 bun run lint
 ```

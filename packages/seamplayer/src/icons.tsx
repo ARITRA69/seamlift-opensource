@@ -1,4 +1,3 @@
-import { createElement } from "react";
 import {
   AlertCircleIcon,
   ArrowLeft01Icon,
@@ -26,6 +25,7 @@ import {
   VolumeLowIcon,
   VolumeMute02Icon,
 } from "@hugeicons/core-free-icons";
+import { element } from "./jsx/dom";
 
 // Hugeicons (free, MIT). The icon data is bundled into the build, so the
 // package has no icon dependency. Strokes follow currentColor.
@@ -81,12 +81,17 @@ export const Icon = ({
     focusable="false"
   >
     {(ICONS[name] as IconData).map(([tag, attrs]) =>
-      createElement(tag, {
-        ...attrs,
-        // a touch heavier than Hugeicons' 1.5 to stay legible over video
-        strokeWidth: 1.8,
-        ...(FILLED.has(name) && { fill: "currentColor" }),
-      })
+      element(
+        tag,
+        {
+          // the data's own `key` is dropped: the renderer never sets one
+          ...attrs,
+          // a touch heavier than Hugeicons' 1.5 to stay legible over video
+          strokeWidth: 1.8,
+          ...(FILLED.has(name) && { fill: "currentColor" }),
+        },
+        undefined
+      )
     )}
   </svg>
 );

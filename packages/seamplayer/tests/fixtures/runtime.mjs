@@ -1,7 +1,7 @@
 import { URL } from "node:url";
 import console from "node:console";
 import { strict as assert } from "node:assert";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
@@ -36,7 +36,12 @@ for (const path of [
   );
   assert(js.startsWith('"use client";'));
   assert(!js.includes("@repo/"));
-  assert(/import\("hls.js"\)/.test(js), "HLS must remain a lazy import");
+  const directory = new URL(".", import.meta.resolve("seamplayer"));
+  const bundle = readdirSync(directory)
+    .filter((name) => name.endsWith(".js"))
+    .map((name) => readFileSync(new URL(name, directory), "utf8"))
+    .join("\n");
+  assert(/import\("hls.js"\)/.test(bundle), "HLS must remain a lazy import");
 }
 console.log(
   "Packed package: ESM, CommonJS, SSR, CSS, client directive, lazy HLS passed"

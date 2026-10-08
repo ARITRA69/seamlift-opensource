@@ -1,17 +1,6 @@
 import Link from "next/link";
 
-const projects = [
-  {
-    name: "seamplayer",
-    summary: "A video player for React",
-    description:
-      "Poster-first playback, a filmstrip timeline, chapters, captions, quality switching, downloads, and the shortcuts people already know.",
-    docs: "/seamplayer",
-    github:
-      "https://github.com/ARITRA69/seamlift-opensource/tree/main/packages/seamplayer",
-    npm: "https://www.npmjs.com/package/seamplayer",
-  },
-] as const;
+import { projects } from "@/lib/docs";
 
 export default function Home() {
   return (
@@ -32,7 +21,7 @@ export default function Home() {
             <li key={project.name} className="space-y-3 py-6">
               <h3 className="flex flex-wrap items-baseline gap-x-2">
                 <Link
-                  href={project.docs}
+                  href={project.href}
                   className="font-semibold tracking-tight underline-offset-4 hover:underline"
                 >
                   {project.name}
@@ -46,10 +35,10 @@ export default function Home() {
               </p>
               <div className="flex gap-5 text-sm">
                 <Link
-                  href={project.docs}
+                  href={project.href}
                   className="underline underline-offset-4"
                 >
-                  Docs and playground
+                  Documentation
                 </Link>
                 <a
                   href={project.github}
