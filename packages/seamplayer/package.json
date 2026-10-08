@@ -87,7 +87,7 @@
     "url": "https://github.com/ARITRA69/seamlift-opensource/issues"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public",

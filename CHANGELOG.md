@@ -4,6 +4,7 @@
 
 - Move the repository to `ARITRA69/seamlift-opensource`, home of Seamlift's open-source projects. Seamplayer's docs now live at https://opensource.seamlift.com/seamplayer.
 - Use Hugeicons for the player's icons. They are bundled into the build, so the package gains no dependency.
+- Lower the package's `engines.node` to `>=18`. The library needs no Node 22 APIs, and the old range blocked Yarn 1 installs on Node 18 and 20.
 
 ## 0.1.1
 
