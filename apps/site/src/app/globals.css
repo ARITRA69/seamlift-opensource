@@ -20,6 +20,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --container-combobox: calc(var(--anchor-width) + var(--spacing) * 7);
+  --spacing-combobox-list: min(
+    calc(var(--spacing) * 87),
+    calc(var(--available-height) - var(--spacing) * 9)
+  );
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
