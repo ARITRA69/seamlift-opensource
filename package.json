@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "bun run build:packages && bun run --parallel --filter \"./packages/*\" --filter @seamlift-opensource/site dev",
     "build:player": "bun run --filter seamplayer build",
-    "build": "bun run build:packages && bun run --filter @seamlift-opensource/site build",
+    "build": "bun run --filter @seamlift-opensource/site build",
     "lint": "bun run --filter \"./packages/*\" --filter @seamlift-opensource/site lint",
     "check-types": "bun run build:packages && bun run --filter \"./packages/*\" --filter @seamlift-opensource/site check-types",
     "format": "prettier --write .",

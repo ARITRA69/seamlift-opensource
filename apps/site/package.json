@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3100",
-    "build": "next build",
+    "build": "bun run --filter seamplayer --filter seamtranscode build && next build",
     "start": "next start --port 3100",
     "lint": "eslint . --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",

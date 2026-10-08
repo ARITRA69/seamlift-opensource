@@ -38,6 +38,8 @@ bun run lint
 
 ## Website
 
+The site’s `build` command compiles both workspace packages before running Next.js, so `bun run build` works from either the repository root or `apps/site` in a clean checkout. For a deployment rooted at `apps/site`, use `bun install --frozen-lockfile` and `bun run build`; include files outside the site directory so the workspace packages are available.
+
 The website uses Next.js, Tailwind v4, and shadcn/ui. Add UI components from the repository root:
 
 ```sh
