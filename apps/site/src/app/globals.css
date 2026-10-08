@@ -17,7 +17,11 @@
   font-display: swap;
 }
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    @slot;
+  }
+}
 
 @theme inline {
   --container-combobox: calc(var(--anchor-width) + var(--spacing) * 7);
@@ -54,6 +58,7 @@
 }
 
 :root {
+  color-scheme: light dark;
   --radius: 0.625rem;
   --background: #fcfcfc;
   --foreground: #171717;
@@ -75,6 +80,29 @@
   --ring: #a3a3a3;
   --sun: #ffd23f;
   --sun-foreground: #1a0b14;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #181a1f;
+    --foreground: #e6e8ed;
+    --card: #21242b;
+    --card-foreground: #e6e8ed;
+    --popover: #21242b;
+    --popover-foreground: #e6e8ed;
+    --primary: #e6e8ed;
+    --primary-foreground: #181a1f;
+    --secondary: #2a2e36;
+    --secondary-foreground: #e6e8ed;
+    --muted: #22252c;
+    --muted-foreground: #a1a7b3;
+    --accent: #2e333c;
+    --accent-foreground: #e6e8ed;
+    --destructive: #fb7185;
+    --border: #353a44;
+    --input: #414854;
+    --ring: #8993a3;
+  }
 }
 
 @layer base {

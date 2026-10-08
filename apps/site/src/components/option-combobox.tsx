@@ -12,6 +12,14 @@ import {
   ComboboxValue,
 } from "@/components/ui/combobox";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 type Option<Value extends string> = { value: Value; label: string };
 
 export function OptionCombobox<Value extends string>({
@@ -22,6 +30,7 @@ export function OptionCombobox<Value extends string>({
   onValueChange,
   size = "sm",
   fullWidth = false,
+  searchable = true,
 }: {
   id?: string;
   label: string;
@@ -30,7 +39,36 @@ export function OptionCombobox<Value extends string>({
   onValueChange: (value: Value) => void;
   size?: "xs" | "sm";
   fullWidth?: boolean;
+  searchable?: boolean;
 }) {
+  // A picker without an input needs Select's listbox keyboard navigation.
+  if (!searchable) {
+    return (
+      <Select
+        value={value}
+        onValueChange={(nextValue) => {
+          const option = options.find((item) => item.value === nextValue);
+          if (option) onValueChange(option.value);
+        }}
+      >
+        <SelectTrigger
+          id={id}
+          aria-label={label}
+          size={size}
+          className={fullWidth ? "w-full" : undefined}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent position="popper" align="end">
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  }
   return (
     <Combobox<Option<Value>>
       items={options}

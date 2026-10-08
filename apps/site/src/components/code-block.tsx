@@ -1,80 +1,53 @@
 "use client";
 
+import { Fragment, type CSSProperties } from "react";
 import {
-  createContext,
-  Fragment,
-  useContext,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+  CodeLanguageSelect,
+  useCodeLanguage,
+} from "@/components/code-language";
+import { CopyCodeButton } from "@/components/copy-code-button";
 import { Highlight, themes } from "prism-react-renderer";
-import { OptionCombobox } from "@/components/option-combobox";
+import { usePageTheme } from "@/lib/use-page-theme";
 import { cn } from "@/lib/utils";
-
-type CodeTheme = "light" | "dark";
-const codeThemes = [
-  { value: "light", label: "Atom One Light" },
-  { value: "dark", label: "Atom One Dark" },
-] as const;
-const CodeThemeContext = createContext<{
-  theme: CodeTheme;
-  setTheme: (theme: CodeTheme) => void;
-} | null>(null);
-
-export function CodeThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<CodeTheme>("light");
-  return (
-    <CodeThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </CodeThemeContext.Provider>
-  );
-}
-
-function useCodeTheme() {
-  const context = useContext(CodeThemeContext);
-  if (!context) throw new Error("Code blocks require CodeThemeProvider.");
-  return context;
-}
-
-export function CodeThemeSelect({ label }: { label: string }) {
-  const { theme, setTheme } = useCodeTheme();
-  return (
-    <OptionCombobox
-      label={`${label} color theme`}
-      options={codeThemes}
-      value={theme}
-      onValueChange={setTheme}
-      size="xs"
-    />
-  );
-}
 
 export function CodeBlock({
   children,
   label,
   language = "tsx",
   embedded = false,
+  javascriptCode,
 }: {
   children: string;
   label: string;
   language?: "tsx" | "bash";
   embedded?: boolean;
+  javascriptCode?: string;
 }) {
-  const { theme } = useCodeTheme();
+  const theme = usePageTheme();
+  const { language: exampleLanguage } = useCodeLanguage();
+  const syntax =
+    language === "bash"
+      ? "bash"
+      : exampleLanguage === "javascript"
+        ? "jsx"
+        : "tsx";
+  const code = syntax === "jsx" ? (javascriptCode ?? children) : children;
   return (
     <div className={cn(!embedded && "overflow-hidden rounded-lg border")}>
       {!embedded && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-5 py-3">
           <span className="font-mono text-xs text-muted-foreground">
-            {language === "bash" ? "Terminal" : "React · TSX"}
+            {language === "bash" ? "Terminal" : "React"}
           </span>
-          <CodeThemeSelect label={label} />
+          <div className="flex items-center gap-2">
+            {language !== "bash" && <CodeLanguageSelect label={label} />}
+            <CopyCodeButton code={code} label={label} compact />
+          </div>
         </div>
       )}
       <Highlight
-        code={children}
-        language={language}
+        code={code}
+        language={syntax}
         theme={theme === "dark" ? themes.oneDark : themes.oneLight}
       >
         {({ style, tokens, getTokenProps }) => (

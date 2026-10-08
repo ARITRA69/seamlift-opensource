@@ -170,10 +170,14 @@ export function validMediaUrl(value: string): boolean {
   }
 }
 
+export type ExampleLanguage = "typescript" | "javascript";
+
 export function generateExample(
   props: SeamPlayerProps,
-  config: Pick<PlaygroundConfig, "controls" | "events">
+  config: Pick<PlaygroundConfig, "controls" | "events">,
+  language: ExampleLanguage = "typescript"
 ): string {
+  const typescript = language === "typescript";
   const hooks = [
     config.controls && "useRef",
     config.events && "useState",
@@ -184,13 +188,13 @@ export function generateExample(
   ].filter(Boolean);
   return `"use client";
 
-${hooks.length ? `import { ${hooks.join(", ")} } from "react";\n` : ""}import { SeamPlayer, type ${types.join(", type ")} } from "seamplayer";
+${hooks.length ? `import { ${hooks.join(", ")} } from "react";\n` : ""}import { SeamPlayer${typescript ? `, type ${types.join(", type ")}` : ""} } from "seamplayer";
 import "seamplayer/styles.css";
 
-const options = ${JSON.stringify(props, null, 2)} satisfies SeamPlayerProps;
+const options = ${JSON.stringify(props, null, 2)}${typescript ? " satisfies SeamPlayerProps" : ""};
 
 export default function PlayerExample() {
-${config.controls ? `  const player = useRef<SeamPlayerHandle>(null);\n` : ""}${config.events ? `  const [status, setStatus] = useState("Ready");\n` : ""}  return (
+${config.controls ? `  const player = useRef${typescript ? "<SeamPlayerHandle>" : ""}(null);\n` : ""}${config.events ? `  const [status, setStatus] = useState("Ready");\n` : ""}  return (
     <div id="playground">
       <SeamPlayer
         {...options}

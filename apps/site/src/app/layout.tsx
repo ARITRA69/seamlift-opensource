@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { CodeThemeProvider } from "@/components/code-block";
+import { CodeLanguageProvider } from "@/components/code-language";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import "seamplayer/styles.css";
 
@@ -14,7 +15,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <CodeThemeProvider>{children}</CodeThemeProvider>
+        <CodeLanguageProvider>{children}</CodeLanguageProvider>
+        <Toaster offset={96} />
       </body>
     </html>
   );

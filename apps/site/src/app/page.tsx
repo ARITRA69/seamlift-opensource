@@ -34,6 +34,12 @@ const refExample = generateExample(
   { controls: true, events: false }
 );
 
+const refExampleJavascript = generateExample(
+  { src: "/film.mp4" },
+  { controls: true, events: false },
+  "javascript"
+);
+
 const documentedProps = [
   ["poster", "Image URL shown before the first play."],
   [
@@ -218,7 +224,12 @@ export default function Home() {
               <h3 className="font-mono text-sm font-medium">
                 SeamPlayerHandle
               </h3>
-              <CodeBlock label="Imperative player API">{refExample}</CodeBlock>
+              <CodeBlock
+                label="Imperative player API"
+                javascriptCode={refExampleJavascript}
+              >
+                {refExample}
+              </CodeBlock>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 The handle also exposes video, the underlying HTML video
                 element, after the first play.

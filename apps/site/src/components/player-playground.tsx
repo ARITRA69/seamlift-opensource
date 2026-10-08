@@ -2,9 +2,14 @@
 
 import { Suspense, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { Check, Copy, Pause, Play, RotateCcw, Code2 } from "lucide-react";
+import { Pause, Play, RotateCcw, Code2 } from "lucide-react";
 import { SeamPlayer, type SeamPlayerHandle } from "seamplayer";
-import { CodeBlock, CodeThemeSelect } from "@/components/code-block";
+import {
+  CodeLanguageSelect,
+  useCodeLanguage,
+} from "@/components/code-language";
+import { CopyCodeButton } from "@/components/copy-code-button";
+import { CodeBlock } from "@/components/code-block";
 import { AccentSwitch } from "@/components/ui/accent-switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,20 +78,18 @@ function Field({
 }
 
 function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
+  const { language } = useCodeLanguage();
   const [config, setConfig] = useState<PlaygroundConfig>({
     ...defaultConfig,
     startTime,
   });
   const [draftSource, setDraftSource] = useState(defaultConfig.customSrc);
   const [sourceError, setSourceError] = useState("");
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
-    "idle"
-  );
   const [status, setStatus] = useState("Ready");
   const [revision, setRevision] = useState(0);
   const player = useRef<SeamPlayerHandle>(null);
   const props = buildPlayerProps(config);
-  const code = generateExample(props, config);
+  const code = generateExample(props, config, language);
   const custom = config.source === "custom";
 
   function update<K extends keyof PlaygroundConfig>(
@@ -94,7 +97,6 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
     value: PlaygroundConfig[K]
   ) {
     setConfig((current) => ({ ...current, [key]: value }));
-    setCopyState("idle");
     setStatus("Ready");
   }
 
@@ -102,18 +104,8 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
     setConfig({ ...defaultConfig, startTime });
     setDraftSource(defaultConfig.customSrc);
     setSourceError("");
-    setCopyState("idle");
     setStatus("Ready");
     setRevision((current) => current + 1);
-  }
-
-  async function copyCode() {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopyState("copied");
-    } catch {
-      setCopyState("error");
-    }
   }
 
   return (
@@ -403,26 +395,14 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
               Your React code
             </h2>
             <div className="flex flex-wrap items-center gap-2">
-              <CodeThemeSelect label="Complete React example" />
-              <Button variant="outline" size="sm" onClick={copyCode}>
-                {copyState === "copied" ? (
-                  <Check aria-hidden="true" />
-                ) : (
-                  <Copy aria-hidden="true" />
-                )}
-                {copyState === "copied" ? "Copied" : "Copy code"}
-              </Button>
+              <CodeLanguageSelect label="Complete React example" />
+              <CopyCodeButton code={code} label="Complete React example" />
             </div>
           </div>
           <CodeBlock label="Complete React example" embedded>
             {code}
           </CodeBlock>
           <div className="space-y-2 px-5 py-4 text-xs leading-relaxed text-muted-foreground">
-            {copyState === "error" && (
-              <p role="alert">
-                Clipboard access is unavailable. Select and copy the code above.
-              </p>
-            )}
             <p>
               The full component updates with every option. Replace demo paths
               with your media. Brand fonts are self-hosted on this site; load

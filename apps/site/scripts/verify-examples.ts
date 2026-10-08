@@ -45,12 +45,14 @@ for (const source of ["qualities", "single", "custom"] as const) {
           );
         }
       }
-      const name = resolve(
-        site,
-        "src",
-        `__example-${source}-${controls}-${events}.tsx`
-      );
-      examples.set(name, generateExample(props, config));
+      for (const language of ["typescript", "javascript"] as const) {
+        const name = resolve(
+          site,
+          "src",
+          `__example-${source}-${controls}-${events}.${language === "typescript" ? "tsx" : "jsx"}`
+        );
+        examples.set(name, generateExample(props, config, language));
+      }
     }
   }
 }
@@ -76,10 +78,16 @@ for (const key of [
     `Disabled option ${key} must be absent`
   );
 }
-examples.set(
-  resolve(site, "src", "__example-minimal.tsx"),
-  generateExample(minimalProps, minimal)
-);
+for (const language of ["typescript", "javascript"] as const) {
+  examples.set(
+    resolve(
+      site,
+      "src",
+      `__example-minimal.${language === "typescript" ? "tsx" : "jsx"}`
+    ),
+    generateExample(minimalProps, minimal, language)
+  );
+}
 for (const value of [
   "",
   "   ",
@@ -95,11 +103,17 @@ for (const value of [
 ])
   assert.equal(validMediaUrl(value), true);
 
-// Typecheck the actual copyable components, including every combination of
-// optional hooks. Virtual files resolve dependencies as if they lived in src.
+// Typecheck TypeScript and syntax-check JavaScript copyable components,
+// including every combination of optional hooks. Virtual files resolve
+// dependencies as if they lived in src.
 const raw = ts.readConfigFile(resolve(site, "tsconfig.json"), ts.sys.readFile);
 const parsed = ts.parseJsonConfigFileContent(raw.config, ts.sys, site);
-const options = { ...parsed.options, incremental: false };
+const options = {
+  ...parsed.options,
+  allowJs: true,
+  checkJs: false,
+  incremental: false,
+};
 const host = ts.createCompilerHost(options);
 const getSourceFile = host.getSourceFile.bind(host);
 host.getSourceFile = (name, version, onError, createNew) =>
@@ -109,7 +123,7 @@ host.getSourceFile = (name, version, onError, createNew) =>
         examples.get(name)!,
         version,
         true,
-        ts.ScriptKind.TSX
+        name.endsWith(".jsx") ? ts.ScriptKind.JSX : ts.ScriptKind.TSX
       )
     : getSourceFile(name, version, onError, createNew);
 const program = ts.createProgram([...examples.keys()], options, host);
