@@ -158,7 +158,7 @@ bun run dev
 
 Publishing runs the checks first. Packing builds fresh outputs. The package includes only `dist`, the README, the license, and package metadata; React and React DOM remain peer dependencies, and hls.js is loaded on demand.
 
-Seamlift consumes a pinned registry version. To develop against a local build, run `bun run build:player` from the repository root and temporarily set its dependency to `file:../../../seamplayer/packages/seamplayer`, then install from Seamlift's root. Restore the published version before committing.
+Seamlift consumes a pinned registry version. To develop against a local build, run `bun run build:player` from the repository root and temporarily set its dependency to `file:../../../seamlift-opensource/packages/seamplayer`, then install from Seamlift's root. Restore the published version before committing.
 
 ## License
 

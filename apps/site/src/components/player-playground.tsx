@@ -410,7 +410,7 @@ function PlaygroundBody({ startTime = 0 }: { startTime?: number }) {
             </p>
             <a
               className="underline underline-offset-4"
-              href="https://github.com/ARITRA69/seamplayer/tree/main/apps/site/public/demo"
+              href="https://github.com/ARITRA69/seamlift-opensource/tree/main/apps/site/public/demo"
             >
               Get the demo assets
             </a>

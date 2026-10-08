@@ -1,5 +1,5 @@
 {
-  "name": "seamplayer-monorepo",
+  "name": "seamlift-opensource",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.4.2",
@@ -11,15 +11,15 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "bun run build:player && bun run --parallel --filter seamplayer --filter @seamplayer/site dev",
+    "dev": "bun run build:player && bun run --parallel --filter seamplayer --filter @seamlift-opensource/site dev",
     "build:player": "bun run --filter seamplayer build",
-    "build": "bun run build:player && bun run --filter @seamplayer/site build",
-    "lint": "bun run --filter seamplayer --filter @seamplayer/site lint",
-    "check-types": "bun run build:player && bun run --filter seamplayer --filter @seamplayer/site check-types",
+    "build": "bun run build:player && bun run --filter @seamlift-opensource/site build",
+    "lint": "bun run --filter seamplayer --filter @seamlift-opensource/site lint",
+    "check-types": "bun run build:player && bun run --filter seamplayer --filter @seamlift-opensource/site check-types",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "bun run --filter seamplayer --filter @seamplayer/site test",
-    "check": "bun run format:check && bun run lint && bun run build && bun run --filter seamplayer --filter @seamplayer/site check-types && bun run test",
+    "test": "bun run --filter seamplayer --filter @seamlift-opensource/site test",
+    "check": "bun run format:check && bun run lint && bun run build && bun run --filter seamplayer --filter @seamlift-opensource/site check-types && bun run test",
     "verify:package": "bun run --filter seamplayer verify:package",
     "publish:player": "bun run --filter seamplayer release"
   },

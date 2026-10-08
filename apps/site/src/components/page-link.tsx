@@ -1,16 +1,18 @@
 "use client";
 
 import type { ComponentProps } from "react";
+import { usePathname } from "next/navigation";
 
 export function PageLink({
   href,
   ...props
 }: Omit<ComponentProps<"a">, "href" | "onClick"> & { href: string }) {
+  const pathname = usePathname();
   const sectionId = href.startsWith("#") ? href.slice(1) : null;
   return (
     <a
       {...props}
-      href={sectionId ? "/" : href}
+      href={sectionId ? pathname : href}
       onClick={(event) => {
         if (
           !sectionId ||

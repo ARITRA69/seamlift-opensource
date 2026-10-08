@@ -11,7 +11,7 @@
     "chapters",
     "captions"
   ],
-  "homepage": "https://github.com/ARITRA69/seamplayer#readme",
+  "homepage": "https://opensource.seamlift.com/seamplayer",
   "license": "MIT",
   "author": "Seamlift",
   "type": "module",
@@ -79,11 +79,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ARITRA69/seamplayer.git",
+    "url": "git+https://github.com/ARITRA69/seamlift-opensource.git",
     "directory": "packages/seamplayer"
   },
   "bugs": {
-    "url": "https://github.com/ARITRA69/seamplayer/issues"
+    "url": "https://github.com/ARITRA69/seamlift-opensource/issues"
   },
   "engines": {
     "node": ">=22"

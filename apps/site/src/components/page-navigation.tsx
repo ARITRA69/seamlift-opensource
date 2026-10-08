@@ -55,7 +55,7 @@ export function PageNavigation() {
     },
     {
       label: "GitHub",
-      href: "https://github.com/ARITRA69/seamplayer",
+      href: "https://github.com/ARITRA69/seamlift-opensource/tree/main/packages/seamplayer",
       icon: Github,
       selected: false,
     },

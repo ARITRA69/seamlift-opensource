@@ -1,9 +1,13 @@
-# Seamplayer
+# Seamlift Open Source
 
-A React video player and its companion website in a small Bun monorepo.
+The open-source parts of [Seamlift](https://seamlift.com), in one Bun monorepo, documented at [opensource.seamlift.com](https://opensource.seamlift.com).
+
+| Project                                     | Description              | Docs                                                                             |
+| ------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------- |
+| [seamplayer](packages/seamplayer/README.md) | A video player for React | [opensource.seamlift.com/seamplayer](https://opensource.seamlift.com/seamplayer) |
 
 ```text
-apps/site/             Next.js App Router website with shadcn/ui
+apps/site/             opensource.seamlift.com: Next.js App Router website with shadcn/ui
 packages/seamplayer/   The public seamplayer npm package
 ```
 
@@ -31,16 +35,16 @@ bun run lint
 The website uses Next.js, Tailwind v4, and shadcn/ui. Add UI components from the repository root:
 
 ```sh
-bun run --filter @seamplayer/site ui:add dialog
+bun run --filter @seamlift-opensource/site ui:add dialog
 ```
 
 `apps/site/components.json` configures component generation. `apps/site/src/app/globals.css` owns the site's semantic theme tokens. `apps/site/eslint.config.mjs` combines Next.js linting with all six `@shadcn/lint` rules as errors: component styling contracts, semantic colors, scale values, inline styles, known classes, and static classes. Edit component variants instead of restyling them at call sites.
 
-The website is one documentation page with a centered player demo, a sticky contents rail, and a floating navigation dock. It includes basic usage, a configurable player playground with complete copyable React code, prop descriptions, styling, and the React API. Media tools, playback options, appearance, imperative controls, and callbacks all feed the same typed configuration used by the preview and code generator. It starts with Seamlift’s full brand demo and supports your own MP4, WebM, or HLS URL. Demo metadata is omitted for custom media. Option changes remount the preview so initial playback props take effect.
+The home page lists the projects. Each project gets its own route; `/seamplayer` is one documentation page with a centered player demo, a sticky contents rail, and a floating navigation dock. It includes basic usage, a configurable player playground with complete copyable React code, prop descriptions, styling, and the React API. Media tools, playback options, appearance, imperative controls, and callbacks all feed the same typed configuration used by the preview and code generator. It starts with Seamlift’s full brand demo and supports your own MP4, WebM, or HLS URL. Demo metadata is omitted for custom media. Option changes remount the preview so initial playback props take effect.
 
 `bun run test` also typechecks the generated components for every combination of sources, refs, and callbacks. The page lists built-in keyboard and touch controls, and links to demo assets and the package API reference.
 
-## Package and releases
+## Seamplayer releases
 
 See [the package README](packages/seamplayer/README.md) for installation, props, and examples.
 
@@ -49,7 +53,7 @@ See [the package README](packages/seamplayer/README.md) for installation, props,
 3. Commit, then run `bun run publish:player` from the repository root.
 4. Tag the published commit as `v<version>` and push the tag.
 
-The root and site are private. Only `packages/seamplayer` is published; its packing and publishing hooks build fresh outputs and run package checks.
+The root and site are private. Only packages under `packages/` are published; its packing and publishing hooks build fresh outputs and run package checks.
 
 Seamlift consumes a pinned npm release from this repository.
 

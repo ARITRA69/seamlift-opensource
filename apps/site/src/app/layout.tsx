@@ -5,9 +5,13 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Seamplayer | A video player for React",
+  metadataBase: new URL("https://opensource.seamlift.com"),
+  title: {
+    default: "Seamlift Open Source",
+    template: "%s | Seamlift Open Source",
+  },
   description:
-    "Poster-first playback, a filmstrip timeline, chapters, captions, and familiar shortcuts. An open-source React video player.",
+    "Open-source tools from Seamlift, starting with Seamplayer, a video player for React.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
