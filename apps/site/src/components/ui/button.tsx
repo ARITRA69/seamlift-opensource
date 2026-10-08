@@ -28,6 +28,7 @@ const buttonVariants = cva(
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+        tile: "h-auto flex-col gap-2.5 rounded-lg px-3 py-4 [&_svg:not([class*='size-'])]:size-7",
       },
     },
     defaultVariants: {
