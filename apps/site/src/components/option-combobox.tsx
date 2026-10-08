@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Combobox,
@@ -20,7 +21,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type Option<Value extends string> = { value: Value; label: string };
+type Option<Value extends string> = {
+  value: Value;
+  label: string;
+  icon?: ReactNode;
+};
 
 export function OptionCombobox<Value extends string>({
   id,
@@ -62,6 +67,7 @@ export function OptionCombobox<Value extends string>({
         <SelectContent position="popper" align="end">
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
+              {option.icon}
               {option.label}
             </SelectItem>
           ))}
@@ -89,6 +95,7 @@ export function OptionCombobox<Value extends string>({
           />
         }
       >
+        {options.find((option) => option.value === value)?.icon}
         <span className="min-w-0 truncate">
           <ComboboxValue />
         </span>
@@ -103,6 +110,7 @@ export function OptionCombobox<Value extends string>({
         <ComboboxList>
           {(option: Option<Value>) => (
             <ComboboxItem key={option.value} value={option}>
+              {option.icon}
               {option.label}
             </ComboboxItem>
           )}
